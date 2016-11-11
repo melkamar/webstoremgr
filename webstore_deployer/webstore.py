@@ -18,7 +18,7 @@ class Webstore:
 
 class GoogleAuth:
     @staticmethod
-    def get_token(client_id, client_secret, code):
+    def get_tokens(client_id, client_secret, code):
         res = requests.post("https://accounts.google.com/o/oauth2/token",
                             data={
                                 "client_id": client_id,
@@ -37,9 +37,34 @@ class GoogleAuth:
         return res_json['access_token'], res_json['refresh_token']
 
     @staticmethod
-    def refresh_token():
-        # TODO
-        pass
+    def use_refresh_token(client_id, client_secret, refresh_token):
+        """
+        Use refresh token to generate a new client access token.
+        Args:
+            client_id(str): Client ID field of Developer Console OAuth client credentials.
+            client_secret(str): Client secret field of Developer Console OAuth client credentials.
+            refresh_token(str): Refresh token obtained when calling get_tokens method.
+
+        Returns:
+            str: New user token valid (by default) for 1 hour.
+        """
+        res = requests.post("https://accounts.google.com/o/oauth2/token",
+                            data={"client_id": client_id,
+                                  "client_secret": client_secret,
+                                  "refresh_token": refresh_token,
+                                  "grant_type": "refresh_token",
+                                  "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                                  }
+                            )
+
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as error:
+            logger.error(error)
+            exit(1)
+
+        res_json = res.json()
+        return res_json['access_token']
 
 
 def repack_crx(filename):
@@ -94,18 +119,18 @@ def get_code(client_id):
 @click.argument('client_secret', required=True)
 @click.argument('code', required=True)
 def get_token(client_id, client_secret, code):
-    access_token, refresh_token = GoogleAuth.get_token(client_id, client_secret, code)
+    access_token, refresh_token = GoogleAuth.get_tokens(client_id, client_secret, code)
     print("Received tokens:")
     print("  access_token: {}".format(access_token))
     print("  refresh_token: {}".format(refresh_token))
 
 
 @main.command()
-@click.argument('token', required=True)
+@click.argument('refresh_token', required=True)
 @click.argument('app_id', required=True)
 @click.argument('filename', required=True)
 @click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
-def upload(token, app_id, filename, filetype):
+def upload(refresh_token, app_id, filename, filetype):
     if filetype == 'crx':
         filename = repack_crx(filename)
 
