@@ -44,12 +44,13 @@ class GoogleAuth:
 
 def repack_crx(filename):
     """
+    Repacks the given .crx file into a .zip file. Will physically create the file on disk.
 
     Args:
         filename(str): A .crx Chrome Extension file.
 
     Returns:
-
+        str: Filename of the newly created zip file.
     """
     file_dir = os.path.dirname(filename)
     temp_dir = os.path.join(file_dir, "temp_deployer")
@@ -64,7 +65,11 @@ def repack_crx(filename):
     zip_file.close()
 
     fn_noext = os.path.splitext(filename)
-    shutil.make_archive(os.path.join(temp_dir, fn_noext[0]), 'zip', temp_dir)
+    zip_new_name = os.path.join(temp_dir, fn_noext[0])
+    logger.info("Creating zipfile {}.zip".format(zip_new_name))
+    shutil.make_archive(zip_new_name, 'zip', temp_dir)
+
+    return "{}.zip".format(zip_new_name)
 
 
 @click.group()
@@ -102,7 +107,9 @@ def get_token(client_id, client_secret, code):
 @click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
 def upload(token, app_id, filename, filetype):
     if filetype == 'crx':
-        repack_crx(filename)
+        filename = repack_crx(filename)
+
+    logger.info("Uploading file {}".format(filename))
 
 
 if __name__ == '__main__':
