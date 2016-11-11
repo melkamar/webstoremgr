@@ -42,7 +42,6 @@ class GoogleAuth:
         pass
 
 
-
 def repack_crx(filename):
     """
 
@@ -54,6 +53,8 @@ def repack_crx(filename):
     """
     file_dir = os.path.dirname(filename)
     temp_dir = os.path.join(file_dir, "temp_deployer")
+    temp_dir = os.path.realpath(temp_dir)
+
     shutil.rmtree(temp_dir)
     os.mkdir(temp_dir)
 
@@ -101,6 +102,7 @@ def get_token(client_id, client_secret, code):
 def upload(token, app_id, filename, filetype):
     if filetype == 'crx':
         repack_crx(filename)
+
 
 if __name__ == '__main__':
     main()
