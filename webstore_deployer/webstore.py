@@ -126,15 +126,20 @@ def get_token(client_id, client_secret, code):
 
 
 @main.command()
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
 @click.argument('refresh_token', required=True)
 @click.argument('app_id', required=True)
 @click.argument('filename', required=True)
 @click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
-def upload(refresh_token, app_id, filename, filetype):
+def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
     if filetype == 'crx':
         filename = repack_crx(filename)
 
     logger.info("Uploading file {}".format(filename))
+
+    auth_token = GoogleAuth.use_refresh_token(client_id, client_secret, refresh_token)
+    logger.info("Obtained auth token: {}".format(auth_token))
 
 
 if __name__ == '__main__':
