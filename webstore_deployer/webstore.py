@@ -55,7 +55,8 @@ def repack_crx(filename):
     temp_dir = os.path.join(file_dir, "temp_deployer")
     temp_dir = os.path.realpath(temp_dir)
 
-    shutil.rmtree(temp_dir)
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
     os.mkdir(temp_dir)
 
     zip_file = zipfile.ZipFile(filename)
