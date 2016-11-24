@@ -3,7 +3,9 @@ import shutil
 import zipfile
 
 import click
+import requests
 from . import logging_helper
+from . import strings
 
 logging_helper.init_logging()
 logger = logging_helper.get_logger(__file__)
@@ -18,6 +20,17 @@ class Webstore:
 class GoogleAuth:
     @staticmethod
     def get_tokens(client_id, client_secret, code):
+        """
+        Obtain access and refresh tokens from Google OAuth from client ID, secret and one-time code.
+
+        Args:
+            client_id(str): ID of the client (see developer console - credentials - OAuth 2.0 client IDs).
+            client_secret(str): Secret of the client (see developer console - credentials - OAuth 2.0 client IDs).
+            code(str): Auth code obtained from confirming access at https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=$CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob.
+
+        Returns:
+            str, str: access_token, refresh_token
+        """
         res = requests.post("https://accounts.google.com/o/oauth2/token",
                             data={
                                 "client_id": client_id,
@@ -36,9 +49,10 @@ class GoogleAuth:
         return res_json['access_token'], res_json['refresh_token']
 
     @staticmethod
-    def use_refresh_token(client_id, client_secret, refresh_token):
+    def gen_access_token(client_id, client_secret, refresh_token):
         """
         Use refresh token to generate a new client access token.
+
         Args:
             client_id(str): Client ID field of Developer Console OAuth client credentials.
             client_secret(str): Client secret field of Developer Console OAuth client credentials.
@@ -103,21 +117,15 @@ def main():
 
 @main.command()
 @click.argument('client_id', required=True)
-def get_code(client_id):
-    print(
-        """
-    Open this URL in your browser, accept permission request and copy the given code.
-    Then run this script again with the <TODO> code.
-
-    https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id={}&redirect_uri=urn:ietf:wg:oauth:2.0:oob
-    """.format(client_id))
+def init(client_id):
+    print(strings.webstore_init_info.format(client_id))
 
 
 @main.command()
 @click.argument('client_id', required=True)
 @click.argument('client_secret', required=True)
 @click.argument('code', required=True)
-def get_token(client_id, client_secret, code):
+def auth(client_id, client_secret, code):
     access_token, refresh_token = GoogleAuth.get_tokens(client_id, client_secret, code)
     print("Received tokens:")
     print("  access_token: {}".format(access_token))
@@ -137,7 +145,7 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
 
     logger.info("Uploading file {}".format(filename))
 
-    auth_token = GoogleAuth.use_refresh_token(client_id, client_secret, refresh_token)
+    auth_token = GoogleAuth.gen_access_token(client_id, client_secret, refresh_token)
     logger.info("Obtained auth token: {}".format(auth_token))
 
 
