@@ -12,9 +12,38 @@ logger = logging_helper.get_logger(__file__)
 
 
 class Webstore:
-    def __init__(self, access_token):
+    def __init__(self, client_id, client_secret, app_id, refresh_token):
         super().__init__()
-        self.access_token = access_token
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.app_id = app_id
+        self.refresh_token = refresh_token
+        self.upload_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
+
+    def upload(self, filename):
+        auth_token = self.generate_access_token()
+
+        headers = {"Authorization": "Bearer {}".format(auth_token),
+                   "x-goog-api-version": "2"}
+
+        data = open(filename, 'rb')
+        response = requests.put(self.upload_url,
+                                headers=headers,
+                                data=data)
+
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as error:
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(1)
+
+        logger.debug("Response json: {}".format(response.json()))
+
+    def generate_access_token(self):
+        auth_token = GoogleAuth.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
+        logger.info("Obtained auth token: {}".format(auth_token))
+        return auth_token
 
 
 class GoogleAuth:
@@ -31,21 +60,28 @@ class GoogleAuth:
         Returns:
             str, str: access_token, refresh_token
         """
-        res = requests.post("https://accounts.google.com/o/oauth2/token",
-                            data={
-                                "client_id": client_id,
-                                "client_secret": client_secret,
-                                "code": code,
-                                "grant_type": "authorization_code",
-                                "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-                            })
+
+        logger.debug("Requesting tokens using parameters:")
+        logger.debug("    Client ID:     {}".format(client_id))
+        logger.debug("    Client secret: {}".format(client_secret))
+        logger.debug("    Code:          {}".format(code))
+
+        response = requests.post("https://accounts.google.com/o/oauth2/token",
+                                 data={
+                                     "client_id": client_id,
+                                     "client_secret": client_secret,
+                                     "code": code,
+                                     "grant_type": "authorization_code",
+                                     "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                                 })
         try:
-            res.raise_for_status()
+            response.raise_for_status()
         except requests.HTTPError as error:
             logger.error(error)
+            logger.error("Response: {}".format(response.json()))
             exit(1)
 
-        res_json = res.json()
+        res_json = response.json()
         return res_json['access_token'], res_json['refresh_token']
 
     @staticmethod
@@ -61,22 +97,23 @@ class GoogleAuth:
         Returns:
             str: New user token valid (by default) for 1 hour.
         """
-        res = requests.post("https://accounts.google.com/o/oauth2/token",
-                            data={"client_id": client_id,
-                                  "client_secret": client_secret,
-                                  "refresh_token": refresh_token,
-                                  "grant_type": "refresh_token",
-                                  "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-                                  }
-                            )
+        response = requests.post("https://accounts.google.com/o/oauth2/token",
+                                 data={"client_id": client_id,
+                                       "client_secret": client_secret,
+                                       "refresh_token": refresh_token,
+                                       "grant_type": "refresh_token",
+                                       "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                                       }
+                                 )
 
         try:
-            res.raise_for_status()
+            response.raise_for_status()
         except requests.HTTPError as error:
             logger.error(error)
+            logger.error("Response: {}".format(response.json()))
             exit(1)
 
-        res_json = res.json()
+        res_json = response.json()
         return res_json['access_token']
 
 
@@ -112,7 +149,8 @@ def repack_crx(filename):
 
 @click.group()
 def main():
-    logging_helper.init_logging()
+    pass
+    # logging_helper.init_logging()
 
 
 @main.command()
@@ -140,13 +178,21 @@ def auth(client_id, client_secret, code):
 @click.argument('filename', required=True)
 @click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
 def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
+    logger.debug("upload with parameters:")
+    logger.debug("  client_id: {}".format(client_id))
+    logger.debug("  client_secret: {}".format(client_secret))
+    logger.debug("  refresh_token: {}".format(refresh_token))
+    logger.debug("  app_id: {}".format(app_id))
+    logger.debug("  filename: {}".format(filename))
+    logger.debug("  filetype: {}".format(filetype))
+
     if filetype == 'crx':
         filename = repack_crx(filename)
 
     logger.info("Uploading file {}".format(filename))
-
-    auth_token = GoogleAuth.gen_access_token(client_id, client_secret, refresh_token)
-    logger.info("Obtained auth token: {}".format(auth_token))
+    store = Webstore(client_id, client_secret, app_id, refresh_token)
+    store.upload(filename)
+    logger.info("Done.")
 
 
 if __name__ == '__main__':
