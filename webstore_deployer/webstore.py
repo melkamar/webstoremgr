@@ -6,6 +6,7 @@ import click
 import requests
 from . import logging_helper
 from . import strings
+from . import util
 
 logging_helper.init_logging()
 logger = logging_helper.get_logger(__file__)
@@ -155,15 +156,6 @@ class GoogleAuth:
         return res_json['access_token']
 
 
-def make_zip(zip_name, path):
-    zip_handle = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
-
-    os.chdir(path)
-    for root, dirs, files in os.walk('.'):
-        for file in files:
-            zip_handle.write(os.path.join(root, file), )
-
-
 def repack_crx(filename):
     """
     Repacks the given .crx file into a .zip file. Will physically create the file on disk.
@@ -191,9 +183,8 @@ def repack_crx(filename):
     zip_new_name = os.path.join(temp_dir, fn_noext[0]) + ".zip"
     logger.info("Creating zipfile {}".format(zip_new_name))
 
-    # shutil.make_archive(zip_new_name, 'zip', temp_dir)
-    make_zip(zip_new_name, temp_dir)
-
+    util.make_zip(zip_new_name, temp_dir)
+    # Todo clean up after the script ends
     return "{}".format(zip_new_name)
 
 
