@@ -12,7 +12,9 @@ General usage to get Chrome extension uploaded is:
 ### In docker
 Ideally use a lightweight Python image:
 ```
-docker run --rm frolvlad/alpine-python3 /bin/sh -c 'pip install --extra-index-url https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local/simple webstore-deployer; webstore-deploy <...>'
+docker run --rm jfloff/alpine-python /bin/bash -c '
+   pip install --extra-index-url https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local/simple webstore-deployer;
+   webstore-deploy <...>'
 ```
 
 ## Packaging
