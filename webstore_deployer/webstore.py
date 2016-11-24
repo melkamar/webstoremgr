@@ -16,33 +16,45 @@ class Webstore:
     Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
     """
 
-    def __init__(self, client_id, client_secret, app_id, refresh_token):
+    def __init__(self, client_id, client_secret, refresh_token, app_id=""):
         super().__init__()
         self.client_id = client_id
         self.client_secret = client_secret
         self.app_id = app_id
         self.refresh_token = refresh_token
-        self.upload_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
+        self.update_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
+        self.new_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
 
-    def upload(self, filename):
+    def upload(self, filename, new_item=False):
         """
         Uploads a zip-archived extension to the webstore.
 
         Args:
             filename(str): Path to the archive.
+            new_item(bool): If true, this is a new extension. If false, this is an update to an existing one.
 
         Returns:
             Null
         """
+        if not new_item and not self.app_id:
+            logger.error("To upload a new version of an extension, supply the app_id parameter!")
+            exit(6)
+
         auth_token = self.generate_access_token()
 
         headers = {"Authorization": "Bearer {}".format(auth_token),
                    "x-goog-api-version": "2"}
 
         data = open(filename, 'rb')
-        response = requests.put(self.upload_url,
-                                headers=headers,
-                                data=data)
+
+        if new_item:
+            response = requests.post(self.new_item_url,
+                                     headers=headers,
+                                     data=data)
+        else:
+            response = requests.put(self.update_item_url,
+                                    headers=headers,
+                                    data=data)
 
         try:
             response.raise_for_status()
@@ -59,7 +71,7 @@ class Webstore:
                 logger.error("Response: {}".format(rjson))
                 exit(2)
             else:
-                logger.info("Upload completed.")
+                logger.info("Upload completed. Item ID: {}".format(rjson['id']))
         except KeyError as error:
             logger.error("Key 'uploadState' not found in returned JSON.")
             logger.error(error)
@@ -68,7 +80,7 @@ class Webstore:
 
     def generate_access_token(self):
         auth_token = GoogleAuth.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
-        logger.info("Obtained auth token: {}".format(auth_token))
+        logger.info("Obtained an auth token: {}".format(auth_token))
         return auth_token
 
 
@@ -143,6 +155,15 @@ class GoogleAuth:
         return res_json['access_token']
 
 
+def make_zip(zip_name, path):
+    zip_handle = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+
+    os.chdir(path)
+    for root, dirs, files in os.walk('.'):
+        for file in files:
+            zip_handle.write(os.path.join(root, file), )
+
+
 def repack_crx(filename):
     """
     Repacks the given .crx file into a .zip file. Will physically create the file on disk.
@@ -162,15 +183,18 @@ def repack_crx(filename):
     os.mkdir(temp_dir)
 
     zip_file = zipfile.ZipFile(filename)
+    logger.debug("Extracting {} to path {}".format(filename, temp_dir))
     zip_file.extractall(temp_dir)
     zip_file.close()
 
     fn_noext = os.path.splitext(filename)
-    zip_new_name = os.path.join(temp_dir, fn_noext[0])
-    logger.info("Creating zipfile {}.zip".format(zip_new_name))
-    shutil.make_archive(zip_new_name, 'zip', temp_dir)
+    zip_new_name = os.path.join(temp_dir, fn_noext[0]) + ".zip"
+    logger.info("Creating zipfile {}".format(zip_new_name))
 
-    return "{}.zip".format(zip_new_name)
+    # shutil.make_archive(zip_new_name, 'zip', temp_dir)
+    make_zip(zip_new_name, temp_dir)
+
+    return "{}".format(zip_new_name)
 
 
 @click.group()
@@ -215,8 +239,37 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
         filename = repack_crx(filename)
 
     logger.info("Uploading file {}".format(filename))
-    store = Webstore(client_id, client_secret, app_id, refresh_token)
+    store = Webstore(client_id, client_secret, refresh_token, app_id=app_id)
     store.upload(filename)
+    logger.info("Done.")
+
+
+@main.command()
+@click.argument('filename', required=True)
+def repack(filename):
+    repack_crx(filename)
+
+
+@main.command()
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+@click.argument('filename', required=True)
+@click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
+def create(client_id, client_secret, refresh_token, filename, filetype):
+    logger.debug("creating with parameters:")
+    logger.debug("  client_id: {}".format(client_id))
+    logger.debug("  client_secret: {}".format(client_secret))
+    logger.debug("  refresh_token: {}".format(refresh_token))
+    logger.debug("  filename: {}".format(filename))
+    logger.debug("  filetype: {}".format(filetype))
+
+    if filetype == 'crx':
+        filename = repack_crx(filename)
+
+    logger.info("Uploading file {}".format(filename))
+    store = Webstore(client_id, client_secret, refresh_token)
+    store.upload(filename, True)
     logger.info("Done.")
 
 

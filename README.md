@@ -9,6 +9,12 @@ General usage to get Chrome extension uploaded is:
 * Run ```webstore-deploy auth <CLIENT_ID> <CLIENT_SECRET> <CODE>``` with `<CODE>` returned from the previous step. Save the `refresh_token` returned.
 * Run ```webstore-deploy upload [--filetype=crx|zip] <CLIENT_ID> <CLIENT_SECRET> <REFRESH_TOKEN> <APP_ID> <FILENAME>```
 
+### In docker
+Ideally use a lightweight Python image:
+```
+docker run --rm frolvlad/alpine-python3 /bin/sh -c 'pip install --extra-index-url https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local/simple webstore-deployer; webstore-deploy <...>'
+```
+
 ## Packaging
 To package and upload to Avast Artifactory:
 * Edit `$HOME/.pypirc` and add:
