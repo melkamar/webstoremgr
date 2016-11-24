@@ -1,9 +1,11 @@
+import asyncio
+import json
 import os
 import shutil
 import zipfile
 
+import aiohttp
 import click
-import requests
 from . import logging_helper
 
 logging_helper.init_logging()
@@ -19,21 +21,50 @@ class Webstore:
 class GoogleAuth:
     @staticmethod
     def get_tokens(client_id, client_secret, code):
-        res = requests.post("https://accounts.google.com/o/oauth2/token",
-                            data={
-                                "client_id": client_id,
-                                "client_secret": client_secret,
-                                "code": code,
-                                "grant_type": "authorization_code",
-                                "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-                            })
-        try:
-            res.raise_for_status()
-        except requests.HTTPError as error:
-            logger.error(error)
-            exit(1)
+        async def do_post():
+            async with aiohttp.ClientSession() as session:
+                # async with session.post("https://accounts.google.com/o/oauth2/token",
+                #                         data={
+                #                             "client_id": client_id,
+                #                             "client_secret": client_secret,
+                #                             "code": code,
+                #                             "grant_type": "authorization_code",
+                #                             "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                #                         }) as response:
+                #     logger.warn("Response status code: {}".format(response.status))
+                #     return await response.text()
 
-        res_json = res.json()
+                for i in range(0, 10):
+                    async with session.get("http://ccm.net/faq/7859-google-chrome-takes-too-long-to-load-a-page") as response:
+                        logger.warn(await response.read())
+                return "done."
+
+        loop = asyncio.get_event_loop()
+
+        import time
+        start = time.time()
+        result = loop.run_until_complete(do_post())
+        stop = time.time()
+        print(stop-start)
+
+        logger.warn("Async returned: {}".format(result))
+        exit(0)
+        # res = requests.post("https://accounts.google.com/o/oauth2/token",
+        #                     data={
+        #                         "client_id": client_id,
+        #                         "client_secret": client_secret,
+        #                         "code": code,
+        #                         "grant_type": "authorization_code",
+        #                         "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+        #                     })
+        # try:
+        #     res.raise_for_status()
+        # except requests.HTTPError as error:
+        #     logger.error(error)
+        #     exit(1)
+        #
+        # res_json = res.json()
+        res_json = json.loads(result)
         return res_json['access_token'], res_json['refresh_token']
 
     @staticmethod
