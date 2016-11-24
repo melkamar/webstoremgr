@@ -193,13 +193,13 @@ def main():
     pass
 
 
-@main.command()
+@main.command('init', short_help="initialize API key. Run this first.")
 @click.argument('client_id', required=True)
 def init(client_id):
     print(strings.webstore_init_info.format(client_id))
 
 
-@main.command()
+@main.command('auth', short_help="exchange code for auth token. Run this after init.")
 @click.argument('client_id', required=True)
 @click.argument('client_secret', required=True)
 @click.argument('code', required=True)
@@ -210,7 +210,7 @@ def auth(client_id, client_secret, code):
     print("  refresh_token: {}".format(refresh_token))
 
 
-@main.command()
+@main.command('upload', short_help="upload a new version of an extension.")
 @click.argument('client_id', required=True)
 @click.argument('client_secret', required=True)
 @click.argument('refresh_token', required=True)
@@ -235,13 +235,7 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
     logger.info("Done.")
 
 
-@main.command()
-@click.argument('filename', required=True)
-def repack(filename):
-    repack_crx(filename)
-
-
-@main.command()
+@main.command('create', short_help="upload a brand new extension.")
 @click.argument('client_id', required=True)
 @click.argument('client_secret', required=True)
 @click.argument('refresh_token', required=True)
@@ -262,6 +256,12 @@ def create(client_id, client_secret, refresh_token, filename, filetype):
     store = Webstore(client_id, client_secret, refresh_token)
     store.upload(filename, True)
     logger.info("Done.")
+
+
+@main.command('repack', short_help="create a zip from .crx archive")
+@click.argument('filename', required=True)
+def repack(filename):
+    repack_crx(filename)
 
 
 if __name__ == '__main__':
