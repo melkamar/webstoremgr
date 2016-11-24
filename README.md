@@ -20,6 +20,7 @@ docker run --rm jfloff/alpine-python /bin/bash -c '
 ## Packaging
 To package and upload to Avast Artifactory:
 * Edit `$HOME/.pypirc` and add:
+
 ```
 [distutils]
 index-servers=
