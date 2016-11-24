@@ -12,6 +12,10 @@ logger = logging_helper.get_logger(__file__)
 
 
 class Webstore:
+    """
+    Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
+    """
+
     def __init__(self, client_id, client_secret, app_id, refresh_token):
         super().__init__()
         self.client_id = client_id
@@ -21,6 +25,15 @@ class Webstore:
         self.upload_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
 
     def upload(self, filename):
+        """
+        Uploads a zip-archived extension to the webstore.
+
+        Args:
+            filename(str): Path to the archive.
+
+        Returns:
+            Null
+        """
         auth_token = self.generate_access_token()
 
         headers = {"Authorization": "Bearer {}".format(auth_token),
@@ -36,9 +49,22 @@ class Webstore:
         except requests.HTTPError as error:
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(1)
+            exit(3)
 
-        logger.debug("Response json: {}".format(response.json()))
+        try:
+            rjson = response.json()
+            state = rjson['uploadState']
+            if not state == 'SUCCESS':
+                logger.error("Uploading state is not SUCCESS.")
+                logger.error("Response: {}".format(rjson))
+                exit(2)
+            else:
+                logger.info("Upload completed.")
+        except KeyError as error:
+            logger.error("Key 'uploadState' not found in returned JSON.")
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(4)
 
     def generate_access_token(self):
         auth_token = GoogleAuth.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
@@ -150,7 +176,6 @@ def repack_crx(filename):
 @click.group()
 def main():
     pass
-    # logging_helper.init_logging()
 
 
 @main.command()
