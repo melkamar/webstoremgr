@@ -18,6 +18,8 @@ def init_logging():
     console_handler.setFormatter(log_formatter)
     requests_log.addHandler(console_handler)
 
+init_logging()
+
 
 def get_logger(name):
     logger = logging.getLogger(name)

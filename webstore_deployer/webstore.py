@@ -8,7 +8,6 @@ from . import logging_helper
 from . import strings
 from . import util
 
-logging_helper.init_logging()
 logger = logging_helper.get_logger(__file__)
 
 
@@ -164,11 +163,9 @@ def repack_crx(filename):
         filename(str): A .crx Chrome Extension file.
 
     Returns:
-        str: Filename of the newly created zip file.
+        str: Filename of the newly created zip file. (full path)
     """
-    file_dir = os.path.dirname(filename)
-    temp_dir = os.path.join(file_dir, "temp_deployer")
-    temp_dir = os.path.realpath(temp_dir)
+    temp_dir = util.build_dir
 
     if os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
@@ -179,13 +176,11 @@ def repack_crx(filename):
     zip_file.extractall(temp_dir)
     zip_file.close()
 
-    fn_noext = os.path.splitext(filename)
-    zip_new_name = os.path.join(temp_dir, fn_noext[0]) + ".zip"
-    logger.info("Creating zipfile {}".format(zip_new_name))
+    fn_noext = os.path.basename(os.path.splitext(filename)[0])
+    zip_new_name = fn_noext + ".zip"
 
-    util.make_zip(zip_new_name, temp_dir)
-    # Todo clean up after the script ends
-    return "{}".format(zip_new_name)
+    full_name = util.make_zip(zip_new_name, temp_dir, util.build_dir)
+    return full_name
 
 
 @click.group()
