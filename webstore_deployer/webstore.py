@@ -24,6 +24,50 @@ class Webstore:
         self.refresh_token = refresh_token
         self.update_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
         self.new_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
+        self.publish_item_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}/publish?publishTarget={{}}".format(
+            app_id)
+
+    def publish(self, target):
+        auth_token = self.generate_access_token()
+
+        headers = {"Authorization": "Bearer {}".format(auth_token),
+                   "x-goog-api-version": "2",
+                   "Content-Length": "0"}
+
+        # Note: webstore API documentation is inconsistent whether it requires publishTarget in headers or in URL
+        # so I will use both, to be sure.
+        if target == "public":
+            target = "default"
+        elif target == "trusted":
+            headers["publishTarget"] = "trustedTesters"
+            target = "trustedTesters"
+        else:
+            logger.error("Unknown publish target: {}".format(target))
+            exit(8)
+
+        logger.debug("Making publish query to {}".format(self.publish_item_url.format(target)))
+        response = requests.post(self.publish_item_url.format(target),
+                                 headers=headers)
+
+        try:
+            res_json = response.json()
+            status = res_json['status']
+            if status:
+                logger.error("Status is not empty (something happened:)")
+                logger.error("Response: {}".format(res_json))
+                exit(9)
+            else:
+                logger.info("Publishing completed. Item ID: {}".format(res_json['id']))
+        except KeyError as error:
+            logger.error("Key 'status' not found in returned JSON.")
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(4)
+        except ValueError:
+            logger.error("Response could not be decoded as JSON.")
+            logger.error("Response code: {}".format(response.status_code))
+            logger.error("Response: {}".format(response.content))
+            exit(10)
 
     def upload(self, filename, new_item=False):
         """
@@ -36,6 +80,11 @@ class Webstore:
         Returns:
             Null
         """
+        if new_item:
+            logger.info("Uploading a new extension - new file: {}".format(filename))
+        else:
+            logger.info("Uploading an update - file: {}".format(filename))
+
         if not new_item and not self.app_id:
             logger.error("To upload a new version of an extension, supply the app_id parameter!")
             exit(6)
@@ -77,6 +126,8 @@ class Webstore:
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
             exit(4)
+
+        logger.info("Done.")
 
     def generate_access_token(self):
         auth_token = GoogleAuth.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
@@ -233,10 +284,8 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
     if filetype == 'crx':
         filename = repack_crx(filename)
 
-    logger.info("Uploading file {}".format(filename))
     store = Webstore(client_id, client_secret, refresh_token, app_id=app_id)
     store.upload(filename)
-    logger.info("Done.")
 
 
 @main.command('create', short_help="upload a brand new extension.")
@@ -256,10 +305,25 @@ def create(client_id, client_secret, refresh_token, filename, filetype):
     if filetype == 'crx':
         filename = repack_crx(filename)
 
-    logger.info("Uploading file {}".format(filename))
     store = Webstore(client_id, client_secret, refresh_token)
     store.upload(filename, True)
-    logger.info("Done.")
+
+
+@main.command('publish', short_help="publish extension to public or trusted audience.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+@click.argument('app_id', required=True)
+@click.option('--target', type=click.Choice(['public', 'trusted']), required=True)
+def publish(client_id, client_secret, refresh_token, app_id, target):
+    logger.debug("client_id: {}".format(client_id))
+    logger.debug("client_secret: {}".format(client_secret))
+    logger.debug("refresh_token: {}".format(refresh_token))
+    logger.debug("app_id: {}".format(app_id))
+    logger.debug("target: {}".format(target))
+
+    store = Webstore(client_id, client_secret, refresh_token, app_id=app_id)
+    store.publish(target)
 
 
 @main.command('repack', short_help="create a zip from .crx archive")

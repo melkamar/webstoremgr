@@ -9,7 +9,7 @@ from . import logging_helper
 logger = logging_helper.get_logger(__file__)
 
 build_dir = tempfile.mkdtemp()
-logger.info("Using temporary directory: {}".format(build_dir))
+logger.debug("Using temporary directory: {}".format(build_dir))
 
 
 def make_zip(zip_name, path, dest_dir=None):
