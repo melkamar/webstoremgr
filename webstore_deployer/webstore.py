@@ -206,12 +206,13 @@ class GoogleAuth:
         return res_json['access_token']
 
 
-def repack_crx(filename):
+def repack_crx(filename, target_dir=""):
     """
     Repacks the given .crx file into a .zip file. Will physically create the file on disk.
 
     Args:
         filename(str): A .crx Chrome Extension file.
+        target_dir(str, optional): If set, zip file will be created in the given directory (instead of temporary dir).
 
     Returns:
         str: Filename of the newly created zip file. (full path)
@@ -230,13 +231,22 @@ def repack_crx(filename):
     fn_noext = os.path.basename(os.path.splitext(filename)[0])
     zip_new_name = fn_noext + ".zip"
 
-    full_name = util.make_zip(zip_new_name, temp_dir, util.build_dir)
+    if not target_dir:
+        full_name = util.make_zip(zip_new_name, temp_dir, util.build_dir)
+    else:
+        full_name = util.make_zip(zip_new_name, temp_dir, target_dir)
     return full_name
 
 
 @click.group()
-def main():
-    pass
+@click.option('-v', '--verbose', count=True,
+              help="Much verbosity. May be repeated multiple times. More v's, more info!")
+def main(verbose):
+    # TODO remove this, let user decide the verbosity level.
+    verbose = 2
+
+    logger.info("Setting level -> {}".format(30 - verbose * 10))
+    logging_helper.set_level(30 - verbose * 10)
 
 
 @main.command('init', short_help="initialize API key. Run this first.")
@@ -329,7 +339,7 @@ def publish(client_id, client_secret, refresh_token, app_id, target):
 @main.command('repack', short_help="create a zip from .crx archive")
 @click.argument('filename', required=True)
 def repack(filename):
-    repack_crx(filename)
+    repack_crx(filename, util.work_dir)
 
 
 if __name__ == '__main__':

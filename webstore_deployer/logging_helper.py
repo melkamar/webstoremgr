@@ -4,11 +4,11 @@ import logging
 log_formatter = logging.Formatter(
     "%(asctime)s [%(filename)-15.15s] [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 
+loggers = []
+
 
 def init_logging():
-    level = logging.DEBUG
-
-    logging.basicConfig(level=level)
+    logging.basicConfig(level=logging.INFO)
 
     # Set logging format for requests
     requests_log = logging.getLogger("requests.packages.urllib3")
@@ -18,7 +18,13 @@ def init_logging():
     console_handler.setFormatter(log_formatter)
     requests_log.addHandler(console_handler)
 
+
 init_logging()
+
+
+def set_level(level):
+    for logger in loggers:
+        logger.setLevel(level)
 
 
 def get_logger(name):
@@ -33,4 +39,5 @@ def get_logger(name):
     file_handler.setFormatter(log_formatter)
     logger.addHandler(file_handler)
 
+    loggers.append(logger)
     return logger

@@ -9,6 +9,7 @@ from . import logging_helper
 logger = logging_helper.get_logger(__file__)
 
 build_dir = tempfile.mkdtemp()
+work_dir = os.getcwd()
 logger.debug("Using temporary directory: {}".format(build_dir))
 
 
