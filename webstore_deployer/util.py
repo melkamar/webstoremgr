@@ -1,3 +1,4 @@
+import atexit
 import os
 import shutil
 import tempfile
@@ -27,5 +28,8 @@ def make_zip(zip_name, path, dest_dir=None):
 
 
 def clean():
-    shutil.rmtree(build_dir)
+    logger.debug("Cleaning temporary directory: {}".format(build_dir))
+    shutil.rmtree(build_dir, ignore_errors=True)
 
+
+atexit.register(clean)
