@@ -245,7 +245,6 @@ def main(verbose):
     # TODO remove this, let user decide the verbosity level.
     verbose = 2
 
-    logger.info("Setting level -> {}".format(30 - verbose * 10))
     logging_helper.set_level(30 - verbose * 10)
 
 
