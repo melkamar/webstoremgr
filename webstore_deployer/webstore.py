@@ -210,6 +210,15 @@ def auth(client_id, client_secret, code):
     print("  refresh_token: {}".format(refresh_token))
 
 
+@main.command('gen-token', short_help="generate new access token from refresh token.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+def gen_token(client_id, client_secret, refresh_token):
+    access_token = GoogleAuth.gen_access_token(client_id, client_secret, refresh_token)
+    print("Access token: {}".format(access_token))
+
+
 @main.command('upload', short_help="upload a new version of an extension.")
 @click.argument('client_id', required=True)
 @click.argument('client_secret', required=True)
