@@ -8,4 +8,4 @@ def make_zip(zip_name, path):
     os.chdir(path)
     for root, dirs, files in os.walk('.'):
         for file in files:
-            zip_handle.write(os.path.join(root, file), )
+            zip_handle.write(os.path.join(root, file))
