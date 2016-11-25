@@ -1,7 +1,8 @@
 import logging
 
 # log_formatter = logging.Formatter("%(asctime)s: %(levelname)s: %(message)s")
-log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+log_formatter = logging.Formatter(
+    "%(asctime)s [%(filename)-15.15s] [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 
 
 def init_logging():
