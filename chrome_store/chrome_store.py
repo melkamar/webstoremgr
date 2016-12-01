@@ -3,8 +3,8 @@ import shutil
 import zipfile
 
 import requests
-from . import logging_helper
-from . import util
+from webstore_deployer import logging_helper
+from webstore_deployer import util
 
 logger = logging_helper.get_logger(__file__)
 

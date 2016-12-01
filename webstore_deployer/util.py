@@ -29,7 +29,7 @@ def make_zip(zip_name, path, dest_dir=None):
 
 
 def clean():
-    logger.debug("Cleaning temporary directory: {}".format(build_dir))
+    # logger.debug("Cleaning temporary directory: {}".format(build_dir))
     shutil.rmtree(build_dir, ignore_errors=True)
 
 
