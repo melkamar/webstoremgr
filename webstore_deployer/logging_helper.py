@@ -9,9 +9,9 @@ log_formatter = logging.Formatter(
 
 loggers = []
 
-log_dir = appdirs.user_log_dir("exdeployer", "melkamar")
+log_dir = appdirs.user_log_dir("webstore_deployer", "melkamar")
 os.makedirs(log_dir, exist_ok=True)
-log_file = os.path.join(log_dir, "exdeployer.log")
+log_file = os.path.join(log_dir, "log")
 
 
 def init_logging():
