@@ -1,0 +1,114 @@
+import click
+from . import chrome_store
+from . import logging_helper
+from . import strings
+from . import util
+
+logger = logging_helper.get_logger(__file__)
+
+
+@click.group()
+@click.option('-v', '--verbose', count=True,
+              help="Much verbosity. May be repeated multiple times. More v's, more info!")
+def main(verbose):
+    # TODO remove this, let user decide the verbosity level.
+    verbose = 2
+
+    logging_helper.set_level(30 - verbose * 10)
+
+
+@main.command('init', short_help="initialize API key. Run this first.")
+@click.argument('client_id', required=True)
+def init(client_id):
+    print(strings.webstore_init_info.format(client_id))
+
+
+@main.command('auth', short_help="exchange code for auth token. Run this after init.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('code', required=True)
+def auth(client_id, client_secret, code):
+    access_token, refresh_token = chrome_store.get_tokens(client_id, client_secret, code)
+    print("Received tokens:")
+    print("  access_token: {}".format(access_token))
+    print("  refresh_token: {}".format(refresh_token))
+
+
+@main.command('gen-token', short_help="generate new access token from refresh token.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+def gen_token(client_id, client_secret, refresh_token):
+    access_token = chrome_store.gen_access_token(client_id, client_secret, refresh_token)
+    print("Access token: {}".format(access_token))
+
+
+@main.command('upload', short_help="upload a new version of an extension.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+@click.argument('app_id', required=True)
+@click.argument('filename', required=True)
+@click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
+def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
+    logger.debug("upload with parameters:")
+    logger.debug("  client_id: {}".format(client_id))
+    logger.debug("  client_secret: {}".format(client_secret))
+    logger.debug("  refresh_token: {}".format(refresh_token))
+    logger.debug("  app_id: {}".format(app_id))
+    logger.debug("  filename: {}".format(filename))
+    logger.debug("  filetype: {}".format(filetype))
+
+    if filetype == 'crx':
+        filename = chrome_store.repack_crx(filename)
+
+    store = chrome_store.Webstore(client_id, client_secret, refresh_token, app_id=app_id)
+    store.upload(filename)
+
+
+@main.command('create', short_help="upload a brand new extension.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+@click.argument('filename', required=True)
+@click.option('-t', '--filetype', default='crx', type=click.Choice(['crx', 'zip']))
+def create(client_id, client_secret, refresh_token, filename, filetype):
+    logger.debug("creating with parameters:")
+    logger.debug("  client_id: {}".format(client_id))
+    logger.debug("  client_secret: {}".format(client_secret))
+    logger.debug("  refresh_token: {}".format(refresh_token))
+    logger.debug("  filename: {}".format(filename))
+    logger.debug("  filetype: {}".format(filetype))
+
+    if filetype == 'crx':
+        filename = chrome_store.repack_crx(filename)
+
+    store = chrome_store.Webstore(client_id, client_secret, refresh_token)
+    store.upload(filename, True)
+
+
+@main.command('publish', short_help="publish extension to public or trusted audience.")
+@click.argument('client_id', required=True)
+@click.argument('client_secret', required=True)
+@click.argument('refresh_token', required=True)
+@click.argument('app_id', required=True)
+@click.option('--target', type=click.Choice(['public', 'trusted']), required=True)
+def publish(client_id, client_secret, refresh_token, app_id, target):
+    logger.debug("client_id: {}".format(client_id))
+    logger.debug("client_secret: {}".format(client_secret))
+    logger.debug("refresh_token: {}".format(refresh_token))
+    logger.debug("app_id: {}".format(app_id))
+    logger.debug("target: {}".format(target))
+
+    store = chrome_store.Webstore(client_id, client_secret, refresh_token, app_id=app_id)
+    store.publish(target)
+
+
+@main.command('repack', short_help="create a zip from .crx archive")
+@click.argument('filename', required=True)
+def repack(filename):
+    chrome_store.repack_crx(filename, util.work_dir)
+
+
+if __name__ == '__main__':
+    main()

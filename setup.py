@@ -5,7 +5,7 @@ Currently only available for Google Chrome."""
 
 setup(
     name='webstore_deployer',
-    version='0.3',
+    version='0.3.1',
     description='Publish browser extensions to their stores.',
     long_description=long_description,
     author='Martin Melka',
@@ -27,7 +27,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'webstore-deploy = webstore_deployer.webstore:main'
+            'webstore-deploy = webstore_deployer.deployer:main'
         ]
     },
     install_requires=['click>=6', 'requests', ]

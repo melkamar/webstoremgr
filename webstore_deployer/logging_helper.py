@@ -1,4 +1,5 @@
 import logging
+import os
 
 # log_formatter = logging.Formatter("%(asctime)s: %(levelname)s: %(message)s")
 log_formatter = logging.Formatter(
@@ -35,7 +36,8 @@ def get_logger(name):
     console_handler.setFormatter(log_formatter)
     logger.addHandler(console_handler)
 
-    file_handler = logging.FileHandler("{}.log".format(name))
+    log_filename = os.path.join(os.getcwd(), "{}.log".format(os.path.basename(name)))
+    file_handler = logging.FileHandler(log_filename)
     file_handler.setFormatter(log_formatter)
     logger.addHandler(file_handler)
 

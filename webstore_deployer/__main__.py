@@ -1,3 +1,3 @@
-from webstore_deployer.webstore import main
+from webstore_deployer.deployer import main
 
 main()
