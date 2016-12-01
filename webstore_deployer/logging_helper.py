@@ -1,11 +1,17 @@
 import logging
 import os
 
+import appdirs
+
 # log_formatter = logging.Formatter("%(asctime)s: %(levelname)s: %(message)s")
 log_formatter = logging.Formatter(
     "%(asctime)s [%(filename)-15.15s] [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 
 loggers = []
+
+log_dir = appdirs.user_log_dir("exdeployer", "melkamar")
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, "exdeployer.log")
 
 
 def init_logging():
@@ -36,8 +42,7 @@ def get_logger(name):
     console_handler.setFormatter(log_formatter)
     logger.addHandler(console_handler)
 
-    log_filename = os.path.join(os.getcwd(), "{}.log".format(os.path.basename(name)))
-    file_handler = logging.FileHandler(log_filename)
+    file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(log_formatter)
     logger.addHandler(file_handler)
 

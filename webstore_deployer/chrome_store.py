@@ -51,7 +51,7 @@ class Webstore:
             res_json = response.json()
             status = res_json['status']
             if status:
-                logger.error("Status is not empty (something happened:)")
+                logger.error("Status is not empty (something bad happened).")
                 logger.error("Response: {}".format(res_json))
                 exit(9)
             else:
@@ -69,7 +69,8 @@ class Webstore:
 
     def upload(self, filename, new_item=False):
         """
-        Uploads a zip-archived extension to the webstore.
+        Uploads a zip-archived extension to the webstore; either as a completely new extension, or as a
+        version update to an existing one.
 
         Args:
             filename(str): Path to the archive.
