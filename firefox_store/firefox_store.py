@@ -18,12 +18,9 @@ class FFStore:
         self.jwt_secret = jwt_secret
 
     def upload(self, filename, addon_id, version):
-        # addonid = 'testtest@melka'
-        # version = '1.1.4'
-
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
 
-        headers = {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
+        headers = self._gen_auth_headers()
         files = {'upload': open(filename, 'rb')}
 
         logger.debug("""
@@ -33,7 +30,7 @@ class FFStore:
         """.format(url, headers, files))
 
         response = requests.put(url,
-                                headers=headers,
+                                headers=self._gen_auth_headers(),
                                 files=files)
 
         try:
@@ -58,6 +55,9 @@ class FFStore:
 
         logger.debug("Response json: {}".format(response.json()))
         logger.info("File {} uploaded for signing.".format(filename))
+
+    def _gen_auth_headers(self):
+        return {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
 
     def gen_jwt_token(self):
         """
@@ -95,7 +95,7 @@ class FFStore:
         """
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
 
-        headers = {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
+        headers = self._gen_auth_headers()
         response = requests.get(url,
                                 headers=headers)
 
@@ -123,7 +123,7 @@ jwt_secret = 'b7907f0b9609eb2e5036e4785b13f6fde20f3a63c1bb78c73e5fe3e8ce5d6350'
 
 # FFStore().upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi')
 ff_store = FFStore(jwt_issuer, jwt_secret)
-ff_store.upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi', addonid, version)
+# ff_store.upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi', addonid, version)
 addon_processed = ff_store.check_status(addonid, version)
 logger.warn("Addon processed: {}".format(addon_processed))
 # FFStore().download("https://addons.mozilla.org/api/v3/file/549075/melka_test-1.1.4-fx.xpi?src=api")
