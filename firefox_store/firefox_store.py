@@ -1,8 +1,9 @@
 # Original development by Filip Masri
 
-import json
+import os
 import random
 import time
+import urllib.parse
 
 import jwt
 import requests
@@ -30,7 +31,7 @@ class FFStore:
         """.format(url, headers, files))
 
         response = requests.put(url,
-                                headers=self._gen_auth_headers(),
+                                headers=headers,
                                 files=files)
 
         try:
@@ -57,6 +58,12 @@ class FFStore:
         logger.info("File {} uploaded for signing.".format(filename))
 
     def _gen_auth_headers(self):
+        """
+        Generate auth headers to be immediately used by Requests.
+
+        Returns(dict): Dictionary of header entries.
+
+        """
         return {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
 
     def gen_jwt_token(self):
@@ -81,6 +88,21 @@ class FFStore:
         encoded_jwt = jwt.encode(payload, secret, algorithm='HS256')
         return encoded_jwt.decode()  # Convert byte-array to string
 
+    def _get_addon_status(self, addon_id, version):
+        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
+
+        headers = self._gen_auth_headers()
+        response = requests.get(url,
+                                headers=headers)
+
+        util.check_requests_response_status(response)
+
+        processed = util.read_json_key(response.json(), 'processed')
+        files = util.read_json_key(response.json(), 'files')
+
+        # logger.debug(json.dumps(response.json()))
+        return processed, files
+
     def check_status(self, addon_id, version):
         """
         Check signing status of an uploaded addon.
@@ -93,26 +115,50 @@ class FFStore:
             bool: True if addon is processed, signed and ready to download. False otherwise (in which case wait before
             retrying).
         """
-        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
 
-        headers = self._gen_auth_headers()
-        response = requests.get(url,
-                                headers=headers)
-
-        util.check_requests_response_status(response)
-        processed = util.read_json_key(response.json(), 'processed')
-
-        logger.debug(json.dumps(response.json()))
+        processed, _ = self._get_addon_status(addon_id, version)
         return processed
 
-    def download(self, url):
-        headers = {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
+    def get_download_urls(self, addon_id, version):
+        """
+        Get URLs for downloading addon files. If files are not finished processing yet, nothing is returned.
 
-        response = requests.get(url,
-                                headers=headers)
-        logger.debug(response.content)
-        with open("C:\\Users\melka\\Downloads\\new-extension.xpi", 'wb') as f:
-            f.write(response.content)
+        Args:
+            addon_id(str): ID of the addon to download.
+            version(str): Version of the addon to download.
+
+        Returns:
+            (list): List of URLs to download if processed. Empty if no files to download or is not finished
+            processing yet.
+        """
+        processed, files = self._get_addon_status(addon_id, version)
+
+        if not processed:
+            logger.info("Addon is not processed yet. Wait for a bit and try again.")
+            return False
+
+        urls = [util.read_json_key(file, 'download_url') for file in files]
+        return urls
+
+    def download(self, addon_id, version, folder=""):
+        urls = self.get_download_urls(addon_id, version)
+        if not urls:
+            logger.warn("Addon is not processed yet. Wait for a bit and try again.")
+            return False
+
+        if not folder:
+            folder = util.build_dir
+
+        headers = self._gen_auth_headers()
+        for url in urls:
+            response = requests.get(url,
+                                    headers=headers)
+
+            filename = os.path.basename(urllib.parse.urlparse(url).path)
+            full_path = os.path.join(folder, filename)
+            logger.info("Writing into file {}".format(full_path))
+            with open(full_path, 'wb') as f:
+                f.write(response.content)
 
 
 addonid = 'testtest@melka'
@@ -124,9 +170,12 @@ jwt_secret = 'b7907f0b9609eb2e5036e4785b13f6fde20f3a63c1bb78c73e5fe3e8ce5d6350'
 # FFStore().upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi')
 ff_store = FFStore(jwt_issuer, jwt_secret)
 # ff_store.upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi', addonid, version)
-addon_processed = ff_store.check_status(addonid, version)
-logger.warn("Addon processed: {}".format(addon_processed))
+# addon_processed = ff_store.check_status(addonid, version)
+# logger.warn("Addon processed: {}".format(addon_processed))
+
+# logger.info(ff_store.get_download_urls(addonid, version))
 # FFStore().download("https://addons.mozilla.org/api/v3/file/549075/melka_test-1.1.4-fx.xpi?src=api")
+ff_store.download(addonid, version)
 
 
 """
