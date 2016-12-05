@@ -18,8 +18,8 @@ class FFStore:
         self.jwt_issuer = jwt_issuer
         self.jwt_secret = jwt_secret
 
-    def upload(self, filename, addon_id, version):
-        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
+    def upload(self, filename, addon_id, addon_version):
+        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 
         headers = self._gen_auth_headers()
         files = {'upload': open(filename, 'rb')}
@@ -88,8 +88,8 @@ class FFStore:
         encoded_jwt = jwt.encode(payload, secret, algorithm='HS256')
         return encoded_jwt.decode()  # Convert byte-array to string
 
-    def _get_addon_status(self, addon_id, version):
-        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, version)
+    def _get_addon_status(self, addon_id, addon_version):
+        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 
         headers = self._gen_auth_headers()
         response = requests.get(url,
@@ -103,35 +103,35 @@ class FFStore:
         # logger.debug(json.dumps(response.json()))
         return processed, files
 
-    def check_status(self, addon_id, version):
+    def check_status(self, addon_id, addon_version):
         """
         Check signing status of an uploaded addon.
 
         Args:
             addon_id(str): ID of the addon to check.
-            version(str): Version of the addon to check.
+            addon_version(str): Version of the addon to check.
 
         Returns:
             bool: True if addon is processed, signed and ready to download. False otherwise (in which case wait before
             retrying).
         """
 
-        processed, _ = self._get_addon_status(addon_id, version)
+        processed, _ = self._get_addon_status(addon_id, addon_version)
         return processed
 
-    def get_download_urls(self, addon_id, version):
+    def get_download_urls(self, addon_id, addon_version):
         """
         Get URLs for downloading addon files. If files are not finished processing yet, nothing is returned.
 
         Args:
             addon_id(str): ID of the addon to download.
-            version(str): Version of the addon to download.
+            addon_version(str): Version of the addon to download.
 
         Returns:
             (list): List of URLs to download if processed. Empty if no files to download or is not finished
             processing yet.
         """
-        processed, files = self._get_addon_status(addon_id, version)
+        processed, files = self._get_addon_status(addon_id, addon_version)
 
         if not processed:
             logger.info("Addon is not processed yet. Wait for a bit and try again.")
@@ -140,8 +140,8 @@ class FFStore:
         urls = [util.read_json_key(file, 'download_url') for file in files]
         return urls
 
-    def download(self, addon_id, version, folder=""):
-        urls = self.get_download_urls(addon_id, version)
+    def download(self, addon_id, addon_version, folder=""):
+        urls = self.get_download_urls(addon_id, addon_version)
         if not urls:
             logger.warn("Addon is not processed yet. Wait for a bit and try again.")
             return False
