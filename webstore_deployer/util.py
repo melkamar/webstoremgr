@@ -1,6 +1,5 @@
 import atexit
 import os
-import shutil
 import tempfile
 import zipfile
 
@@ -30,7 +29,8 @@ def make_zip(zip_name, path, dest_dir=None):
 
 def clean():
     # logger.debug("Cleaning temporary directory: {}".format(build_dir))
-    shutil.rmtree(build_dir, ignore_errors=True)
+    # shutil.rmtree(build_dir, ignore_errors=True)
+    pass
 
 
 def check_requests_response_status(response):
@@ -57,9 +57,10 @@ def read_json_key(dictionary, key, error_message=""):
     try:
         value = dictionary[key]
     except KeyError as error:
-        logger.error("Key '{}' not found in JSON.")
+        logger.error("Key '{}' not found in JSON.".format(key))
         if error_message:
             logger.error(error_message)
+        logger.error("JSON: {}".format(dictionary))
         logger.error(error)
         exit(4)
 
