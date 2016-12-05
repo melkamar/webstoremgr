@@ -33,4 +33,37 @@ def clean():
     shutil.rmtree(build_dir, ignore_errors=True)
 
 
+def check_requests_response_status(response):
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as error:
+        logger.error(error)
+        logger.error("Response: {}".format(response.json()))
+        exit(3)
+
+
+def read_json_key(dictionary, key, error_message=""):
+    """
+    Read key in JSON entry. If key not found, display error message and exit.
+
+    Args:
+        dictionary: Python dictionary from which to read the key.
+        key: Key to read from the dictionary.
+        error_message(str, optional): Message to be displayed in case of failure.
+
+    Returns:
+        str: Value associated with the key in the dictionary. If no such key found, program will exit.
+    """
+    try:
+        value = dictionary[key]
+    except KeyError as error:
+        logger.error("Key '{}' not found in JSON.")
+        if error_message:
+            logger.error(error_message)
+        logger.error(error)
+        exit(4)
+
+    return value
+
+
 atexit.register(clean)

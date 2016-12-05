@@ -30,6 +30,6 @@ setup(
             'webstore-deploy = webstore_deployer.deployer:main'
         ]
     },
-    install_requires=['click>=6', 'requests', 'appdirs'],
+    install_requires=['click>=6', 'requests', 'appdirs', 'PyJWT'],
     tests_require=['pytest']
 )

@@ -15,7 +15,7 @@ log_file = os.path.join(log_dir, "log")
 
 
 def init_logging():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     # Set logging format for requests
     requests_log = logging.getLogger("requests.packages.urllib3")
