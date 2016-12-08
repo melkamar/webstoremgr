@@ -216,14 +216,7 @@ def repack_crx(filename, target_dir=""):
     """
     temp_dir = util.build_dir
 
-    if os.path.exists(temp_dir):
-        shutil.rmtree(temp_dir)
-    os.mkdir(temp_dir)
-
-    zip_file = zipfile.ZipFile(filename)
-    logger.debug("Extracting {} to path {}".format(filename, temp_dir))
-    zip_file.extractall(temp_dir)
-    zip_file.close()
+    util.unzip(filename, temp_dir)
 
     fn_noext = os.path.basename(os.path.splitext(filename)[0])
     zip_new_name = fn_noext + ".zip"

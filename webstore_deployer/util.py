@@ -3,6 +3,7 @@ import os
 import tempfile
 import zipfile
 import requests
+import shutil
 
 from . import logging_helper
 
@@ -84,6 +85,28 @@ def custom_options(option_list):
         return func
 
     return ret_func
+
+
+def unzip(filename, temp_dir):
+    """
+    Unzip a file into the given folder. Contents of the folder will be erased if it exists. If it does not exist, it
+     will be created.
+
+    Args:
+        filename(str): Name of the file to unzip.
+        temp_dir(str): Destination folder to which contents of the zipfile will be added.
+
+    Returns:
+
+    """
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
+    os.mkdir(temp_dir)
+
+    zip_file = zipfile.ZipFile(filename)
+    logger.debug("Extracting {} to path {}".format(filename, temp_dir))
+    zip_file.extractall(temp_dir)
+    zip_file.close()
 
 
 atexit.register(clean)

@@ -12,7 +12,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="chrome-webstore-deployer" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/webstore_deployer/__main__.py" />
-    <option name="PARAMETERS" value="chrome repack c:\Users\melka\Downloads\ic.crx" />
+    <option name="PARAMETERS" value="chrome repack c:\Users\melka\Downloads\pam.crx" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>
