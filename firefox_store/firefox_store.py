@@ -63,16 +63,19 @@ class FFStore:
         return encoded_jwt.decode()  # Convert byte-array to string
 
     @staticmethod
-    def parse_version(filename):
+    def parse_manifest(filename):
         """
-        Parse Firefox extension version from the given xpi file. The version is expected to be located in `install.rdf`
-        inside <em:version> tags.
+        Parse Firefox extension id and version from the given xpi file. The attributes are expected to be located in
+        `install.rdf` inside <em:id> and <em:version> tags.
 
         Args:
             filename(str): Name of the xpi file.
 
         Returns:
-            :obj:`str` or :obj:`None`: String if a version was successfully parsed, None otherwise.
+            tuple: (id, version)
+
+        Raises:
+            KeyError:if ID or Version cannot be parsed from the file.
         """
 
         temp_dir = os.path.join(util.build_dir, os.path.basename(filename))
@@ -82,11 +85,26 @@ class FFStore:
 
         # Read install.rdf manifest and parse
         with open(os.path.join(temp_dir, "install.rdf")) as f:
-            search = re.search(r'<em:version>([^<]*)</em:version>', f.read())
+            txt = f.read()
+            # ID
+            search = re.search(r'<em:id>([^<]*)</em:id>', txt)
             if search:
-                return search.group(1)
+                ext_id = search.group(1)
             else:
-                return None
+                ext_id = None
+
+            # Version
+            search = re.search(r'<em:version>([^<]*)</em:version>', txt)
+            if search:
+                ext_version = search.group(1)
+            else:
+                ext_version = None
+
+            if ext_id and ext_version:
+                return ext_id, ext_version
+            else:
+                raise KeyError(
+                    "Version or ID could not be parsed. Obtained ID:{}, Version:{}".format(ext_id, ext_version))
 
     def _get_addon_status(self, addon_id, addon_version):
         """
@@ -135,6 +153,12 @@ class FFStore:
         Returns:
             bool: True if extension was downloaded correctly, False otherwise.
         """
+        logger.info(
+            "Downloading extension. ID: {}, version: {}. Polling every {} seconds up to {} times.".format(addon_id,
+                                                                                                          addon_version,
+                                                                                                          interval,
+                                                                                                          attempts))
+
         processed = False
         urls = []
         for attempt_nr in range(0, attempts):
@@ -179,7 +203,7 @@ class FFStore:
 
         return True
 
-    def upload(self, filename, addon_id, addon_version=""):
+    def upload(self, filename, addon_id, addon_version):
         """
         Upload a xpi extension to the store and automatically sign it.
 
@@ -196,12 +220,14 @@ class FFStore:
         """
         # If no version was specified, try parsing it from the file.
         if not addon_version:
-            parsed_version = self.parse_version(filename)
+            parsed_version = self.parse_manifest(filename)
             if not parsed_version:
                 logger.error("Version could not be parsed from file {}. Check the install.rdf file or specify the "
                              "version yourself.".format(filename))
                 return False
             addon_version = parsed_version
+
+        logger.info("Uploading file {}. ID: {}, version: {}.".format(filename, addon_id, addon_version))
 
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 

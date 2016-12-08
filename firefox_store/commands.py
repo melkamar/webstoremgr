@@ -7,6 +7,8 @@ logger = logging_helper.get_logger(__file__)
 
 _upload_options = [
     click.option('--filename', required=True, help="File to sign."),
+    click.option('--addon_id', required=False,
+                 help="ID of the extension. If not provided, it will be parsed from the file."),
     click.option('--version', required=False,
                  help="Version of the extension. If not provided, it will be parsed from the file.")
 ]
@@ -28,7 +30,6 @@ _jwt_options = [
 
 _general_options = [
     *_jwt_options,
-    click.option('--addon_id', required=True)
 ]
 
 
@@ -38,16 +39,25 @@ def firefox():
 
 
 @firefox.command('upload', short_help="Upload a xpi extension on Mozilla store.")
-@custom_options(_general_options)
+@custom_options(_jwt_options)
 @custom_options(_upload_options)
 @click.pass_context
-def upload(ctx, jwt_issuer, jwt_secret, addon_id, filename, version):
+def upload(ctx, jwt_issuer, jwt_secret, filename, addon_id, version):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
+
+    if not addon_id or not version:
+        parsed_id, parsed_version = store.parse_manifest(filename)
+        if not addon_id:
+            addon_id = parsed_id
+        if not version:
+            version = parsed_version
+
     store.upload(filename, addon_id, version)
 
 
 @firefox.command('download', short_help="Download a xpi extension on Mozilla store.")
-@custom_options(_general_options)
+@custom_options(_jwt_options)
+@click.option('--addon_id', required=False, help="ID of the extension.")
 @click.option('--version', required=True, help="Version of the extension.")
 @custom_options(_download_options)
 @click.pass_context
@@ -64,8 +74,13 @@ def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts,
 def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, attempts, folder):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
 
-    if not version:
-        version = store.parse_version(filename)
+    if not addon_id or not version:
+        parsed_id, parsed_version = store.parse_manifest(filename)
+        if not addon_id:
+            addon_id = parsed_id
+        if not version:
+            version = parsed_version
+
     store.upload(filename, addon_id, version)
     store.download(addon_id, version, folder, attempts, interval)
 
