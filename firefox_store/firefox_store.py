@@ -98,27 +98,38 @@ class FFStore:
         util.check_requests_response_status(response)
 
         processed = util.read_json_key(response.json(), 'processed')
-        files = util.read_json_key(response.json(), 'files')
-        urls = [util.read_json_key(file, 'download_url') for file in files]
+
+        urls = []
+        if processed:
+            files = util.read_json_key(response.json(), 'files')
+            urls = [util.read_json_key(file, 'download_url') for file in files]
 
         # logger.debug(json.dumps(response.json()))
         return processed, urls
 
     def download(self, addon_id, addon_version, folder="", attempts=1, interval=10):
         processed = False
+        urls = []
         for attempt_nr in range(0, attempts):
             processed, urls = self.get_addon_status(addon_id, addon_version)
-            if processed:
+
+            # Check both processed flag and if urls is not empty.
+            # FF store may sometimes return processed=True but empty URL list, which is only filled up at the next call.
+            if processed and urls:
                 break
             else:
-                logger.warn("Attempt {}/{}: addon is not processed. Will retry in {} seconds.".format(attempt_nr + 1,
-                                                                                                      attempts,
-                                                                                                      interval))
+                logger.warn(
+                    "Attempt {}/{}: addon is not processed or no URLs obtained. Will retry in {} seconds.".format(
+                        attempt_nr + 1,
+                        attempts,
+                        interval))
                 time.sleep(interval)
 
         if not processed:
             logger.error("Addon was not processed in time. Consider increasing number of attempts or interval.")
             return False
+        else:
+            logger.debug("Addon processed, proceed with download. Obtained URLs: {}".format(urls))
 
         if not folder:
             folder = util.build_dir
@@ -143,7 +154,8 @@ class FFStore:
 
 
 addonid = 'testtest@melka'
-version = '1.1.8'
+version = '1.1.11'
+# version = '1.1.9'
 
 jwt_issuer = 'user:12694088:77'
 jwt_secret = 'b7907f0b9609eb2e5036e4785b13f6fde20f3a63c1bb78c73e5fe3e8ce5d6350'
@@ -156,7 +168,7 @@ ff_store = FFStore(jwt_issuer, jwt_secret)
 
 # logger.info(ff_store.get_download_urls(addonid, version))
 # FFStore().download("https://addons.mozilla.org/api/v3/file/549075/melka_test-1.1.4-fx.xpi?src=api")
-ff_store.download(addonid, version, attempts=6, folder="C:\\Users\\melka\\work\\temp\\neco\\zdar")
+ff_store.download(addonid, version, interval=2, attempts=60, folder="C:\\Users\\melka\\work\\temp\\neco\\zdar")
 
 """
 'iss': 'user:12694088:77',
