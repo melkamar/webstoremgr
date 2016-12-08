@@ -7,6 +7,8 @@ import urllib.parse
 
 import jwt
 import requests
+import re
+
 from webstore_deployer import logging_helper, util
 
 logger = logging_helper.get_logger(__file__)
@@ -114,6 +116,32 @@ class FFStore:
         secret = self.jwt_secret
         encoded_jwt = jwt.encode(payload, secret, algorithm='HS256')
         return encoded_jwt.decode()  # Convert byte-array to string
+
+    @staticmethod
+    def parse_version(filename):
+        """
+        Parse Firefox extension version from the given xpi file. The version is expected to be located in `install.rdf`
+        inside <em:version> tags.
+
+        Args:
+            filename(str): Name of the xpi file.
+
+        Returns:
+            :obj:`str` or :obj:`None`: String if a version was successfully parsed, None otherwise.
+        """
+
+        temp_dir = os.path.join(util.build_dir, os.path.basename(filename))
+
+        # Extract xpi
+        util.unzip(filename, temp_dir)
+
+        # Read install.rdf manifest and parse
+        with open(os.path.join(temp_dir, "install.rdf")) as f:
+            search = re.search(r'<em:version>([^<]*)</em:version>', f.read())
+            if search:
+                return search.group(1)
+            else:
+                return None
 
     def get_addon_status(self, addon_id, addon_version):
         """
