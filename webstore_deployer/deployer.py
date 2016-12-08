@@ -1,5 +1,6 @@
 import click
 from chrome_store import commands as chrome_commands
+from firefox_store import commands as firefox_commands
 from . import logging_helper
 
 logger = logging_helper.get_logger(__file__)
@@ -16,6 +17,7 @@ def main(verbose):
 
 
 main.add_command(chrome_commands.chrome)
+main.add_command(firefox_commands.firefox)
 
 if __name__ == '__main__':
     main()
