@@ -88,8 +88,8 @@ class FFStore:
         """
         Generate auth headers to be immediately used by Requests.
 
-        Returns(dict): Dictionary of header entries.
-
+        Returns(dict):
+            Dictionary of header entries.
         """
         return {"Authorization": "JWT {0}".format(self.gen_jwt_token())}
 
@@ -162,7 +162,6 @@ class FFStore:
         Returns:
             bool: True if extension was downloaded correctly, False otherwise.
         """
-        self.get_addon_status()
         processed = False
         urls = []
         for attempt_nr in range(0, attempts):
