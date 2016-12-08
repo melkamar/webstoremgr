@@ -99,54 +99,19 @@ class FFStore:
 
         processed = util.read_json_key(response.json(), 'processed')
         files = util.read_json_key(response.json(), 'files')
+        urls = [util.read_json_key(file, 'download_url') for file in files]
 
         # logger.debug(json.dumps(response.json()))
-        return processed, files
-
-    # def check_status(self, addon_id, addon_version):
-    #     """
-    #     Check signing status of an uploaded addon.
-    #
-    #     Args:
-    #         addon_id(str): ID of the addon to check.
-    #         addon_version(str): Version of the addon to check.
-    #
-    #     Returns:
-    #         bool: True if addon is processed, signed and ready to download. False otherwise (in which case wait before
-    #         retrying).
-    #     """
-    #
-    #     processed, _ = self.get_addon_status(addon_id, addon_version)
-    #     return processed
-    #
-    # def get_download_urls(self, addon_id, addon_version):
-    #     """
-    #     Get URLs for downloading addon files. If files are not finished processing yet, nothing is returned.
-    #
-    #     Args:
-    #         addon_id(str): ID of the addon to download.
-    #         addon_version(str): Version of the addon to download.
-    #
-    #     Returns:
-    #         (list): List of URLs to download if processed. Empty if no files to download or is not finished
-    #         processing yet.
-    #     """
-    #     processed, files = self.get_addon_status(addon_id, addon_version)
-    #
-    #     if not processed:
-    #         logger.info("Addon is not processed yet. Wait for a bit and try again.")
-    #         return False
-    #
-    #     urls = [util.read_json_key(file, 'download_url') for file in files]
-    #     return urls
+        return processed, urls
 
     def download(self, addon_id, addon_version, folder="", attempts=1, interval=10):
+        processed = False
         for attempt_nr in range(0, attempts):
             processed, urls = self.get_addon_status(addon_id, addon_version)
             if processed:
                 break
             else:
-                logger.warn("Attempt {}/{}: addon is not processed. Will retry in {} seconds.".format(attempt_nr+1,
+                logger.warn("Attempt {}/{}: addon is not processed. Will retry in {} seconds.".format(attempt_nr + 1,
                                                                                                       attempts,
                                                                                                       interval))
                 time.sleep(interval)
@@ -158,8 +123,13 @@ class FFStore:
         if not folder:
             folder = util.build_dir
 
+        # if folder does not exist, create it
+        if not os.path.exists(folder):
+            os.makedirs(folder, exist_ok=True)
+
         headers = self._gen_auth_headers()
         for url in urls:
+            logger.debug("Downloading file from url: {}".format(url))
             response = requests.get(url,
                                     headers=headers)
 
@@ -172,24 +142,21 @@ class FFStore:
         return True
 
 
-
-
 addonid = 'testtest@melka'
-version = '1.1.7'
+version = '1.1.8'
 
 jwt_issuer = 'user:12694088:77'
 jwt_secret = 'b7907f0b9609eb2e5036e4785b13f6fde20f3a63c1bb78c73e5fe3e8ce5d6350'
 
 # FFStore().upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi')
 ff_store = FFStore(jwt_issuer, jwt_secret)
-ff_store.upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi', addonid, version)
+# ff_store.upload('c:\\Users\\melka\\Downloads\\xpi\\testext.xpi', addonid, version)
 # addon_processed = ff_store.check_status(addonid, version)
 # logger.warn("Addon processed: {}".format(addon_processed))
 
 # logger.info(ff_store.get_download_urls(addonid, version))
 # FFStore().download("https://addons.mozilla.org/api/v3/file/549075/melka_test-1.1.4-fx.xpi?src=api")
-ff_store.download(addonid, version)
-
+ff_store.download(addonid, version, attempts=6, folder="C:\\Users\\melka\\work\\temp\\neco\\zdar")
 
 """
 'iss': 'user:12694088:77',
