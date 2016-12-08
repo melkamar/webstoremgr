@@ -68,4 +68,22 @@ def read_json_key(dictionary, key, error_message=""):
     return value
 
 
+def custom_options(option_list):
+    """
+    Decorator for Click. Add options in the list to the command.
+    Args:
+        option_list(:obj:`list` of :obj:`click.option`): list of options
+
+    Returns:
+        function
+    """
+
+    def ret_func(func):
+        for option in reversed(option_list):
+            func = option(func)
+        return func
+
+    return ret_func
+
+
 atexit.register(clean)
