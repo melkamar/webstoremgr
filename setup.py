@@ -5,7 +5,7 @@ Currently only available for Google Chrome."""
 
 setup(
     name='webstore_deployer',
-    version='0.4.1',
+    version='0.5',
     description='Publish browser extensions to their stores.',
     long_description=long_description,
     author='Martin Melka',
@@ -22,7 +22,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Topic :: Software Development'
     ],
-    url='<not available yet>',
+    url='https://git.int.avast.com/melka/webstore-deployer',
     include_package_data=True,
     packages=find_packages(),
     entry_points={
