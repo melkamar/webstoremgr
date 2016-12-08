@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="upload" type="PythonConfigurationType" factoryName="Python" folderName="chrome">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+    </envs>
+    <option name="SDK_HOME" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/webstore_deployer" />
+    <option name="IS_MODULE_SDK" value="true" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <module name="chrome-webstore-deployer" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/webstore_deployer/__main__.py" />
+    <option name="PARAMETERS" value="chrome upload -t zip 768901070498-a3bf8bg0p0g8puvfhlb3e855etgkq923.apps.googleusercontent.com uThXpquoQV3bg-xqn70BTjYi 1/3KfLWfIkQwbQ-G3gIk27QYvqiNeRnAe6WdBzrqIPdHY hejfeodeehhjfiabpojddpdhmihlohbj c:\Users\melka\work\git-checkouted\chrome-webstore-deployer\testing\ic.zip" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <method />
+  </configuration>
+</component>
