@@ -5,12 +5,18 @@ from . import firefox_store
 
 logger = logging_helper.get_logger(__file__)
 
+_upload_options = [
+    click.option('--filename', required=True, help="File to sign."),
+    click.option('--version', required=False,
+                 help="Version of the extension. If not provided, it will be parsed from the file.")
+]
+
 _download_options = [
     click.option('--interval', default=30,
                  help="Polling interval in seconds to retry downloading given extension from Mozilla store."),
     click.option('--attempts', default=10,
                  help="Number of polling attempts to download given extension from Mozilla store."),
-    click.option('--folder', help="Target folder for the download.")
+    click.option('--folder', help="Target folder for the download."),
 ]
 
 _jwt_options = [
@@ -22,8 +28,7 @@ _jwt_options = [
 
 _general_options = [
     *_jwt_options,
-    click.option('--addon_id', required=True),
-    click.option('--version', required=True)
+    click.option('--addon_id', required=True)
 ]
 
 
@@ -34,15 +39,16 @@ def firefox():
 
 @firefox.command('upload', short_help="Upload a xpi extension on Mozilla store.")
 @custom_options(_general_options)
-@click.option('--filename', required=True, help="File to sign.")
+@custom_options(_upload_options)
 @click.pass_context
-def upload(ctx, jwt_issuer, jwt_secret, addon_id, version, filename):
+def upload(ctx, jwt_issuer, jwt_secret, addon_id, filename, version):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
     store.upload(filename, addon_id, version)
 
 
 @firefox.command('download', short_help="Download a xpi extension on Mozilla store.")
 @custom_options(_general_options)
+@click.option('--version', required=True, help="Version of the extension.")
 @custom_options(_download_options)
 @click.pass_context
 def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts, folder):
@@ -52,11 +58,14 @@ def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts,
 
 @firefox.command('sign', short_help="Sign a xpi extension on Mozilla store and download the signed file.")
 @custom_options(_general_options)
-@click.option('--filename', required=True, help="File to sign.")
+@custom_options(_upload_options)
 @custom_options(_download_options)
 @click.pass_context
 def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, attempts, folder):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
+
+    if not version:
+        version = store.parse_version(filename)
     store.upload(filename, addon_id, version)
     store.download(addon_id, version, folder, attempts, interval)
 

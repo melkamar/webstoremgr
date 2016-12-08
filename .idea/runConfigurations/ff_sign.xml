@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ff sign ext" type="PythonConfigurationType" factoryName="Python" folderName="firefox">
+  <configuration default="false" name="ff sign" type="PythonConfigurationType" factoryName="Python" folderName="firefox">
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>

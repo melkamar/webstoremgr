@@ -31,61 +31,6 @@ class FFStore:
         self.jwt_issuer = jwt_issuer
         self.jwt_secret = jwt_secret
 
-    def upload(self, filename, addon_id, addon_version):
-        """
-        Upload a xpi extension to the store and automatically sign it.
-
-        Note that the extension will not be signed instantaneously. Some automatic checks are performed and it takes
-        a while.
-
-        Args:
-            filename(str): Filename of the extension on the disk.
-            addon_id(str): ID of the addon as specified in its install.rdf manifest under <em:id>.
-            addon_version(str): Version of the addon as specified in its install.rdf manifest under <em:version>.
-
-        Returns:
-
-        """
-        # Todo allow automatic version parsing from xpi file.
-
-        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
-
-        headers = self._gen_auth_headers()
-        files = {'upload': open(filename, 'rb')}
-
-        logger.debug("""
-        URL: {}
-        Headers: {}
-        Files: {}
-        """.format(url, headers, files))
-
-        response = requests.put(url,
-                                headers=headers,
-                                files=files)
-
-        try:
-            response.raise_for_status()
-        except requests.HTTPError as error:
-            logger.error(error)
-            logger.error("Response: {}".format(response.json()))
-            exit(3)
-
-        try:
-            # Check if returned info is what we expect (guid should match the addon ID)
-            res_json = response.json()
-            guid = res_json['guid']
-            if guid != addon_id:
-                logger.error("Returned guid is not equal to addon ID.")
-                logger.error(response.json())
-                exit(5)
-        except KeyError as error:
-            logger.error("Key 'guid' not found in returned JSON.")
-            logger.error(error)
-            exit(4)
-
-        logger.debug("Response json: {}".format(response.json()))
-        logger.info("File {} uploaded for signing.".format(filename))
-
     def _gen_auth_headers(self):
         """
         Generate auth headers to be immediately used by Requests.
@@ -143,7 +88,7 @@ class FFStore:
             else:
                 return None
 
-    def get_addon_status(self, addon_id, addon_version):
+    def _get_addon_status(self, addon_id, addon_version):
         """
         Find status of an addon uploaded to the Mozilla store.
 
@@ -193,7 +138,7 @@ class FFStore:
         processed = False
         urls = []
         for attempt_nr in range(0, attempts):
-            processed, urls = self.get_addon_status(addon_id, addon_version)
+            processed, urls = self._get_addon_status(addon_id, addon_version)
 
             # Check both processed flag and if urls is not empty.
             # FF store may sometimes return processed=True but empty URL list, which is only filled up at the next call.
@@ -231,5 +176,69 @@ class FFStore:
             logger.info("Writing into file {}".format(full_path))
             with open(full_path, 'wb') as f:
                 f.write(response.content)
+
+        return True
+
+    def upload(self, filename, addon_id, addon_version=""):
+        """
+        Upload a xpi extension to the store and automatically sign it.
+
+        Note that the extension will not be signed instantaneously. Some automatic checks are performed and it takes
+        a while.
+
+        Args:
+            filename(str): Filename of the extension on the disk.
+            addon_id(str): ID of the addon as specified in its install.rdf manifest under <em:id>.
+            addon_version(str): Version of the addon as specified in its install.rdf manifest under <em:version>.
+
+        Returns:
+            bool: True if upload was successful, False otherwise.
+        """
+        # If no version was specified, try parsing it from the file.
+        if not addon_version:
+            parsed_version = self.parse_version(filename)
+            if not parsed_version:
+                logger.error("Version could not be parsed from file {}. Check the install.rdf file or specify the "
+                             "version yourself.".format(filename))
+                return False
+            addon_version = parsed_version
+
+        url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
+
+        headers = self._gen_auth_headers()
+        files = {'upload': open(filename, 'rb')}
+
+        logger.debug("""
+        URL: {}
+        Headers: {}
+        Files: {}
+        """.format(url, headers, files))
+
+        response = requests.put(url,
+                                headers=headers,
+                                files=files)
+
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as error:
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(3)
+
+        try:
+            # Check if returned info is what we expect (guid should match the addon ID)
+            res_json = response.json()
+            guid = res_json['guid']
+            if guid != addon_id:
+                logger.error("Returned guid is not equal to addon ID.")
+                logger.error(response.json())
+                exit(5)
+        except KeyError as error:
+            logger.error("Key 'guid' not found in returned JSON.")
+            logger.error(error)
+            exit(4)
+
+        logger.debug("Response json: {}".format(response.json()))
+        logger.info("File {} uploaded for signing.".format(filename))
 
         return True
