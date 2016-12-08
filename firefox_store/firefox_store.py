@@ -13,12 +13,39 @@ logger = logging_helper.get_logger(__file__)
 
 
 class FFStore:
+    """
+    Class representing Mozilla Add-on store.
+
+    Provides methods for interacting with it - authenticating and signing extensions.
+    """
+
     def __init__(self, jwt_issuer, jwt_secret):
+        """
+        Args:
+            jwt_issuer(str): JWT Issuer field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
+            jwt_secret(str): JWT Secret field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
+        """
         super().__init__()
         self.jwt_issuer = jwt_issuer
         self.jwt_secret = jwt_secret
 
     def upload(self, filename, addon_id, addon_version):
+        """
+        Upload a xpi extension to the store and automatically sign it.
+
+        Note that the extension will not be signed instantaneously. Some automatic checks are performed and it takes
+        a while.
+
+        Args:
+            filename(str): Filename of the extension on the disk.
+            addon_id(str): ID of the addon as specified in its install.rdf manifest under <em:id>.
+            addon_version(str): Version of the addon as specified in its install.rdf manifest under <em:version>.
+
+        Returns:
+
+        """
+        # Todo allow automatic version parsing from xpi file.
+
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 
         headers = self._gen_auth_headers()
@@ -89,6 +116,20 @@ class FFStore:
         return encoded_jwt.decode()  # Convert byte-array to string
 
     def get_addon_status(self, addon_id, addon_version):
+        """
+        Find status of an addon uploaded to the Mozilla store.
+
+        Args:
+            addon_id(str): ID of the addon as specified in its install.rdf manifest under <em:id>.
+            addon_version(str): Version of the addon as specified in its install.rdf manifest under <em:version>.
+
+        Returns:
+            tuple:
+               processed(bool):                 True if the extension is signed and ready to be downloaded,
+                                                False otherwise.
+               urls(:obj:`list` of :obj:`str`): list of URLs from which to download the files associated with the
+                                                extension. Will be empty if processed is False.
+        """
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 
         headers = self._gen_auth_headers()
@@ -107,6 +148,21 @@ class FFStore:
         return processed, urls
 
     def download(self, addon_id, addon_version, folder="", attempts=1, interval=10):
+        """
+        Downloads an extension from the store. In case the extension is not processed (signed etc.) yet,
+        the store will be polled several times to try and download it.
+
+        Args:
+            addon_id(str): ID of the addon as specified in its install.rdf manifest under <em:id>.
+            addon_version(str): Version of the addon as specified in its install.rdf manifest under <em:version>.
+            folder(str, optional): Destination folder where to place the downloaded file(s).
+            attempts(int, optional): Number of polling attempts to do.
+            interval(int, optional): Interval in seconds between polling attempts.
+
+        Returns:
+            bool: True if extension was downloaded correctly, False otherwise.
+        """
+        self.get_addon_status()
         processed = False
         urls = []
         for attempt_nr in range(0, attempts):
