@@ -2,6 +2,7 @@ import atexit
 import os
 import tempfile
 import zipfile
+import requests
 
 from . import logging_helper
 
