@@ -9,12 +9,12 @@ from webstore_deployer import util
 logger = logging_helper.get_logger(__file__)
 
 
-class Webstore:
+class ChromeStore:
     """
     Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
     """
 
-    def __init__(self, client_id, client_secret, refresh_token, app_id=""):
+    def __init__(self, client_id, client_secret, refresh_token, app_id="", session=None):
         super().__init__()
         self.client_id = client_id
         self.client_secret = client_secret
@@ -24,6 +24,8 @@ class Webstore:
         self.new_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
         self.publish_item_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}/publish?publishTarget={{}}".format(
             app_id)
+
+        self.session = session or requests.Session()
 
     def publish(self, target):
         auth_token = self.generate_access_token()
@@ -44,8 +46,8 @@ class Webstore:
             exit(8)
 
         logger.debug("Making publish query to {}".format(self.publish_item_url.format(target)))
-        response = requests.post(self.publish_item_url.format(target),
-                                 headers=headers)
+        response = self.session.post(self.publish_item_url.format(target),
+                                     headers=headers)
 
         try:
             res_json = response.json()
@@ -96,13 +98,13 @@ class Webstore:
         data = open(filename, 'rb')
 
         if new_item:
-            response = requests.post(self.new_item_url,
-                                     headers=headers,
-                                     data=data)
+            response = self.session.post(self.new_item_url,
+                                         headers=headers,
+                                         data=data)
         else:
-            response = requests.put(self.update_item_url,
-                                    headers=headers,
-                                    data=data)
+            response = self.session.put(self.update_item_url,
+                                        headers=headers,
+                                        data=data)
 
         try:
             response.raise_for_status()
@@ -129,78 +131,83 @@ class Webstore:
         logger.info("Done.")
 
     def generate_access_token(self):
-        auth_token = gen_access_token(self.client_id, self.client_secret, self.refresh_token)
+        auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
         logger.info("Obtained an auth token: {}".format(auth_token))
         return auth_token
 
+    @staticmethod
+    def get_tokens(client_id, client_secret, code, session=None):
+        """
+        Obtain access and refresh tokens from Google OAuth from client ID, secret and one-time code.
 
-def get_tokens(client_id, client_secret, code):
-    """
-    Obtain access and refresh tokens from Google OAuth from client ID, secret and one-time code.
+        Args:
+            client_id(str): ID of the client (see developer console - credentials - OAuth 2.0 client IDs).
+            client_secret(str): Secret of the client (see developer console - credentials - OAuth 2.0 client IDs).
+            code(str): Auth code obtained from confirming access at
+                       https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=$CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob.
+            session(requests.Session, optional): If set, use this session for HTTP requests.
 
-    Args:
-        client_id(str): ID of the client (see developer console - credentials - OAuth 2.0 client IDs).
-        client_secret(str): Secret of the client (see developer console - credentials - OAuth 2.0 client IDs).
-        code(str): Auth code obtained from confirming access at https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=$CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob.
+        Returns:
+            str, str: access_token, refresh_token
+        """
 
-    Returns:
-        str, str: access_token, refresh_token
-    """
+        logger.debug("Requesting tokens using parameters:")
+        logger.debug("    Client ID:     {}".format(client_id))
+        logger.debug("    Client secret: {}".format(client_secret))
+        logger.debug("    Code:          {}".format(code))
 
-    logger.debug("Requesting tokens using parameters:")
-    logger.debug("    Client ID:     {}".format(client_id))
-    logger.debug("    Client secret: {}".format(client_secret))
-    logger.debug("    Code:          {}".format(code))
+        session = session or requests.Session()
+        response = session.post("https://accounts.google.com/o/oauth2/token",
+                                data={
+                                    "client_id": client_id,
+                                    "client_secret": client_secret,
+                                    "code": code,
+                                    "grant_type": "authorization_code",
+                                    "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                                })
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as error:
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(1)
 
-    response = requests.post("https://accounts.google.com/o/oauth2/token",
-                             data={
-                                 "client_id": client_id,
-                                 "client_secret": client_secret,
-                                 "code": code,
-                                 "grant_type": "authorization_code",
-                                 "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-                             })
-    try:
-        response.raise_for_status()
-    except requests.HTTPError as error:
-        logger.error(error)
-        logger.error("Response: {}".format(response.json()))
-        exit(1)
+        res_json = response.json()
+        return res_json['access_token'], res_json['refresh_token']
 
-    res_json = response.json()
-    return res_json['access_token'], res_json['refresh_token']
+    @staticmethod
+    def gen_access_token(client_id, client_secret, refresh_token, session=None):
+        """
+        Use refresh token to generate a new client access token.
 
+        Args:
+            client_id(str): Client ID field of Developer Console OAuth client credentials.
+            client_secret(str): Client secret field of Developer Console OAuth client credentials.
+            refresh_token(str): Refresh token obtained when calling get_tokens method.
+            session(requests.Session, optional): If set, use this session for HTTP requests.
 
-def gen_access_token(client_id, client_secret, refresh_token):
-    """
-    Use refresh token to generate a new client access token.
+        Returns:
+            str: New user token valid (by default) for 1 hour.
+        """
+        session = session or requests.Session()
+        response = session.post("https://accounts.google.com/o/oauth2/token",
+                                data={"client_id": client_id,
+                                      "client_secret": client_secret,
+                                      "refresh_token": refresh_token,
+                                      "grant_type": "refresh_token",
+                                      "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
+                                      }
+                                )
 
-    Args:
-        client_id(str): Client ID field of Developer Console OAuth client credentials.
-        client_secret(str): Client secret field of Developer Console OAuth client credentials.
-        refresh_token(str): Refresh token obtained when calling get_tokens method.
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as error:
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(1)
 
-    Returns:
-        str: New user token valid (by default) for 1 hour.
-    """
-    response = requests.post("https://accounts.google.com/o/oauth2/token",
-                             data={"client_id": client_id,
-                                   "client_secret": client_secret,
-                                   "refresh_token": refresh_token,
-                                   "grant_type": "refresh_token",
-                                   "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-                                   }
-                             )
-
-    try:
-        response.raise_for_status()
-    except requests.HTTPError as error:
-        logger.error(error)
-        logger.error("Response: {}".format(response.json()))
-        exit(1)
-
-    res_json = response.json()
-    return res_json['access_token']
+        res_json = response.json()
+        return res_json['access_token']
 
 
 def repack_crx(filename, target_dir=""):

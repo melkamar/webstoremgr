@@ -21,7 +21,7 @@ def init(client_id):
 @click.argument('client_secret', required=True)
 @click.argument('code', required=True)
 def auth(client_id, client_secret, code):
-    access_token, refresh_token = chrome_store.get_tokens(client_id, client_secret, code)
+    access_token, refresh_token = chrome_store.ChromeStore.get_tokens(client_id, client_secret, code)
     print("Received tokens:")
     print("  access_token: {}".format(access_token))
     print("  refresh_token: {}".format(refresh_token))
@@ -32,7 +32,7 @@ def auth(client_id, client_secret, code):
 @click.argument('client_secret', required=True)
 @click.argument('refresh_token', required=True)
 def gen_token(client_id, client_secret, refresh_token):
-    access_token = chrome_store.gen_access_token(client_id, client_secret, refresh_token)
+    access_token = chrome_store.ChromeStore.gen_access_token(client_id, client_secret, refresh_token)
     print("Access token: {}".format(access_token))
 
 
@@ -55,7 +55,7 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
     if filetype == 'crx':
         filename = chrome_store.repack_crx(filename)
 
-    store = chrome_store.Webstore(client_id, client_secret, refresh_token, app_id=app_id)
+    store = chrome_store.ChromeStore(client_id, client_secret, refresh_token, app_id=app_id)
     store.upload(filename)
 
 
@@ -76,7 +76,7 @@ def create(client_id, client_secret, refresh_token, filename, filetype):
     if filetype == 'crx':
         filename = chrome_store.repack_crx(filename)
 
-    store = chrome_store.Webstore(client_id, client_secret, refresh_token)
+    store = chrome_store.ChromeStore(client_id, client_secret, refresh_token)
     store.upload(filename, True)
 
 
@@ -93,7 +93,7 @@ def publish(client_id, client_secret, refresh_token, app_id, target):
     logger.debug("app_id: {}".format(app_id))
     logger.debug("target: {}".format(target))
 
-    store = chrome_store.Webstore(client_id, client_secret, refresh_token, app_id=app_id)
+    store = chrome_store.ChromeStore(client_id, client_secret, refresh_token, app_id=app_id)
     store.publish(target)
 
 
