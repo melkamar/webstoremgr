@@ -10,24 +10,25 @@ import requests
 import re
 
 from webstore_deployer import logging_helper, util
+from store.store import Store
 
 logger = logging_helper.get_logger(__file__)
 
 
-class FFStore:
+class FFStore(Store):
     """
     Class representing Mozilla Add-on store.
 
     Provides methods for interacting with it - authenticating and signing extensions.
     """
 
-    def __init__(self, jwt_issuer, jwt_secret):
+    def __init__(self, jwt_issuer, jwt_secret, session=None):
         """
         Args:
             jwt_issuer(str): JWT Issuer field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
             jwt_secret(str): JWT Secret field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
         """
-        super().__init__()
+        super().__init__(session)
         self.jwt_issuer = jwt_issuer
         self.jwt_secret = jwt_secret
 
