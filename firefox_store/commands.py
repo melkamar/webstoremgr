@@ -19,6 +19,8 @@ _download_options = [
     click.option('--attempts', default=10,
                  help="Number of polling attempts to download given extension from Mozilla store."),
     click.option('--folder', help="Target folder for the download."),
+    click.option('--target_name', help="Target filename to save the extension as. Only applicable if the downloads "
+                                       "contains a single file. It is ignored otherwise."),
 ]
 
 _jwt_options = [
@@ -61,9 +63,9 @@ def upload(ctx, jwt_issuer, jwt_secret, filename, addon_id, version):
 @click.option('--version', required=True, help="Version of the extension.")
 @custom_options(_download_options)
 @click.pass_context
-def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts, folder):
+def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts, folder, target_name):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
-    store.download(addon_id, version, folder, attempts, interval)
+    store.download(addon_id, version, folder, attempts, interval, target_name=target_name)
 
 
 @firefox.command('sign', short_help="Sign a xpi extension on Mozilla store and download the signed file.")
@@ -71,7 +73,7 @@ def download(ctx, jwt_issuer, jwt_secret, addon_id, version, interval, attempts,
 @custom_options(_upload_options)
 @custom_options(_download_options)
 @click.pass_context
-def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, attempts, folder):
+def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, attempts, folder, target_name):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
 
     if not addon_id or not version:
@@ -82,7 +84,7 @@ def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, att
             version = parsed_version
 
     store.upload(filename, addon_id, version)
-    store.download(addon_id, version, folder, attempts, interval)
+    store.download(addon_id, version, folder, attempts, interval, target_name=target_name)
 
 
 @firefox.command('gen_token', short_help="Generate a JWT token used to authenticate in Mozilla store.")

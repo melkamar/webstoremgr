@@ -138,7 +138,7 @@ class FFStore:
 
         return processed, urls
 
-    def download(self, addon_id, addon_version, folder="", attempts=1, interval=10):
+    def download(self, addon_id, addon_version, folder="", attempts=1, interval=10, target_name=""):
         """
         Downloads an extension from the store. In case the extension is not processed (signed etc.) yet,
         the store will be polled several times to try and download it.
@@ -195,7 +195,13 @@ class FFStore:
             response = requests.get(url,
                                     headers=headers)
 
-            filename = os.path.basename(urllib.parse.urlparse(url).path)
+            if len(urls) == 1 and target_name:
+                logger.warn("Target name provided and a single file is being downloaded. Ignoring URL name and saving "
+                            "as: {}.".format(target_name))
+                filename = target_name
+            else:
+                filename = os.path.basename(urllib.parse.urlparse(url).path)
+
             full_path = os.path.join(folder, filename)
             logger.info("Writing into file {}".format(full_path))
             with open(full_path, 'wb') as f:
