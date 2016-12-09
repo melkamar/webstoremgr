@@ -1,21 +1,20 @@
 import os
-import shutil
-import zipfile
 
 import requests
 from webstore_deployer import logging_helper
 from webstore_deployer import util
+from store.store import Store
 
 logger = logging_helper.get_logger(__file__)
 
 
-class ChromeStore:
+class ChromeStore(Store):
     """
     Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
     """
 
     def __init__(self, client_id, client_secret, refresh_token, app_id="", session=None):
-        super().__init__()
+        super().__init__(session)
         self.client_id = client_id
         self.client_secret = client_secret
         self.app_id = app_id
@@ -24,8 +23,6 @@ class ChromeStore:
         self.new_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
         self.publish_item_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}/publish?publishTarget={{}}".format(
             app_id)
-
-        self.session = session or requests.Session()
 
     def publish(self, target):
         auth_token = self.generate_access_token()
