@@ -1,0 +1,51 @@
+{
+  "http_interactions": [
+    {
+      "response": {
+        "headers": {
+          "Accept-Ranges": "none",
+          "Vary": "Accept-Encoding",
+          "Server": "ESF",
+          "Expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "Alt-Svc": "quic=\":443\"; ma=2592000; v=\"35,34\"",
+          "X-Frame-Options": "SAMEORIGIN",
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+          "Content-Disposition": "attachment; filename=\"json.txt\"; filename*=UTF-8''json.txt",
+          "Content-Type": "application/json; charset=utf-8",
+          "Transfer-Encoding": "chunked",
+          "X-Content-Type-Options": "nosniff",
+          "X-XSS-Protection": "1; mode=block",
+          "Date": "Thu, 22 Dec 2016 14:22:40 GMT",
+          "Pragma": "no-cache"
+        },
+        "body": {
+          "string": "{\n  \"access_token\" : \"<ACCESS_TOKEN>\",\n  \"expires_in\" : 3600,\n  \"token_type\" : \"Bearer\"\n}",
+          "encoding": "utf-8"
+        },
+        "url": "https://accounts.google.com/o/oauth2/token",
+        "status": {
+          "code": 200,
+          "message": "OK"
+        }
+      },
+      "recorded_at": "2016-12-22T14:22:40",
+      "request": {
+        "headers": {
+          "Accept-Encoding": "identity",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Connection": "keep-alive",
+          "User-Agent": "python-requests/2.12.2",
+          "Content-Length": "257",
+          "Accept": "*/*"
+        },
+        "uri": "https://accounts.google.com/o/oauth2/token",
+        "body": {
+          "string": "refresh_token=<REFRESH_TOKEN>&client_secret=<CLIENT_SECRET>&client_id=<CLIENT_ID>&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&grant_type=refresh_token",
+          "encoding": "utf-8"
+        },
+        "method": "POST"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

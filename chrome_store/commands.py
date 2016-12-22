@@ -21,7 +21,7 @@ def init(client_id):
 @click.argument('client_secret', required=True)
 @click.argument('code', required=True)
 def auth(client_id, client_secret, code):
-    access_token, refresh_token = chrome_store.ChromeStore.get_tokens(client_id, client_secret, code)
+    access_token, refresh_token = chrome_store.ChromeStore.redeem_code(client_id, client_secret, code)
     print("Received tokens:")
     print("  access_token: {}".format(access_token))
     print("  refresh_token: {}".format(refresh_token))

@@ -13,7 +13,7 @@ class ChromeStore(Store):
     Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
     """
 
-    def __init__(self, client_id, client_secret, refresh_token, app_id="", session=None):
+    def __init__(self, client_id, client_secret, refresh_token=None, app_id="", session=None):
         super().__init__(session)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -128,12 +128,15 @@ class ChromeStore(Store):
         logger.info("Done.")
 
     def generate_access_token(self):
-        auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token)
+        auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token, session=self.session)
         logger.info("Obtained an auth token: {}".format(auth_token))
         return auth_token
 
+    def authenticate(self, code):
+        _, self.refresh_token = ChromeStore.redeem_code(self.client_id, self.client_secret, code, self.session)
+
     @staticmethod
-    def get_tokens(client_id, client_secret, code, session=None):
+    def redeem_code(client_id, client_secret, code, session=None):
         """
         Obtain access and refresh tokens from Google OAuth from client ID, secret and one-time code.
 

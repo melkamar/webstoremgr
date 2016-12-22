@@ -31,5 +31,5 @@ setup(
         ]
     },
     install_requires=['click>=6', 'requests', 'appdirs', 'PyJWT'],
-    tests_require=['pytest']
+    tests_require=['pytest', 'betamax']
 )
