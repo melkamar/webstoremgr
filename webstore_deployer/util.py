@@ -61,16 +61,14 @@ def read_json_key(dictionary, key, error_message=""):
         str: Value associated with the key in the dictionary. If no such key found, program will exit.
     """
     try:
-        value = dictionary[key]
+        return dictionary[key]
     except KeyError as error:
         logger.error("Key '{}' not found in JSON.".format(key))
         if error_message:
             logger.error(error_message)
         logger.error("JSON: {}".format(dictionary))
         logger.error(error)
-        exit(4)
-
-    return value
+        raise error
 
 
 def custom_options(option_list):
