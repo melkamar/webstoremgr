@@ -41,10 +41,11 @@ def clean():
 def check_requests_response_status(response):
     try:
         response.raise_for_status()
+        return True
     except requests.HTTPError as error:
         logger.error(error)
         logger.error("Response: {}".format(response.json()))
-        exit(3)
+        return False
 
 
 def read_json_key(dictionary, key, error_message=""):

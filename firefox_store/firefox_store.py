@@ -128,7 +128,8 @@ class FFStore(Store):
         response = requests.get(url,
                                 headers=headers)
 
-        util.check_requests_response_status(response)
+        if not util.check_requests_response_status(response):
+            exit(3)
 
         processed = util.read_json_key(response.json(), 'processed')
 
