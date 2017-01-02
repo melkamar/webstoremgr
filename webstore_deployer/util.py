@@ -21,11 +21,14 @@ def make_zip(zip_name, path, dest_dir=None):
     logger.info("Creating zipfile {}".format(zip_name))
     zip_handle = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
 
+    orig_cwd = os.getcwd()
+
     os.chdir(path)
     for root, dirs, files in os.walk('.'):
         for file in files:
             zip_handle.write(os.path.join(root, file))
 
+    os.chdir(orig_cwd)
     return zip_name
 
 
