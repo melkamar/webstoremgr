@@ -38,14 +38,14 @@ def clean():
     pass
 
 
-def check_requests_response_status(response):
+def handle_requests_response_status(response: requests.Response):
+
     try:
         response.raise_for_status()
-        return True
     except requests.HTTPError as error:
         logger.error(error)
         logger.error("Response: {}".format(response.json()))
-        return False
+        raise error
 
 
 def read_json_key(dictionary, key, error_message=""):
