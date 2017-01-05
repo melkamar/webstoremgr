@@ -4,7 +4,7 @@ long_description = """Publish browser extensions to their stores.
 Currently only available for Google Chrome."""
 
 setup(
-    name='webstore_deployer',
+    name='webstore_manager',
     version='0.5.2',
     description='Publish browser extensions to their stores.',
     long_description=long_description,
@@ -27,7 +27,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'webstore-deploy = webstore_deployer.deployer:main'
+            'webstore-deploy = webstore_manager.deployer:main'
         ]
     },
     install_requires=['click>=6', 'requests', 'appdirs', 'PyJWT'],

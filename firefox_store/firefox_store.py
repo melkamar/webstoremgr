@@ -9,7 +9,7 @@ import jwt
 import requests
 import re
 
-from webstore_deployer import logging_helper, util
+from webstore_manager import logging_helper, util
 from store.store import Store
 
 logger = logging_helper.get_logger(__file__)

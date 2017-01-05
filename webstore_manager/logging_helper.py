@@ -9,7 +9,7 @@ log_formatter = logging.Formatter(
 
 loggers = []
 
-log_dir = appdirs.user_log_dir("webstore_deployer", "melkamar")
+log_dir = appdirs.user_log_dir("webstore_manager", "melkamar")
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, "log")
 

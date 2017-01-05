@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from webstore_deployer.deployer import main
+from webstore_manager.manager import main
 
 
 def test_init():

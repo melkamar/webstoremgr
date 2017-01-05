@@ -5,8 +5,8 @@ import os
 import zipfile
 
 from flexmock import flexmock
-import webstore_deployer.util as util
-from webstore_deployer.util import pushd, temp_dir
+import webstore_manager.util as util
+from webstore_manager.util import pushd, temp_dir
 
 
 def test_check_requests_response_status_ok():

@@ -1,8 +1,8 @@
 import os
 
 import requests
-from webstore_deployer import logging_helper
-from webstore_deployer import util
+from webstore_manager import logging_helper
+from webstore_manager import util
 from store.store import Store
 
 logger = logging_helper.get_logger(__file__)

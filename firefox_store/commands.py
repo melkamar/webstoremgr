@@ -1,6 +1,6 @@
 import click
-from webstore_deployer import logging_helper, util, strings
-from webstore_deployer.util import custom_options
+from webstore_manager import logging_helper, util, strings
+from webstore_manager.util import custom_options
 from . import firefox_store
 
 logger = logging_helper.get_logger(__file__)
