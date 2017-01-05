@@ -1,5 +1,6 @@
 from chrome_store.chrome_store import ChromeStore
 from chrome_store.chrome_store import repack_crx
+import pytest
 
 import os
 import shutil
@@ -22,6 +23,30 @@ def test_gen_access_token(betamax_session, auth):
                         session=betamax_session)
 
     assert store.generate_access_token() is not None
+
+
+def test_upload(betamax_session, auth):
+    store = ChromeStore(client_id=auth['client_id'],
+                        client_secret=auth['client_secret'],
+                        refresh_token=auth['refresh_token'],
+                        app_id=auth['app_id'],
+                        session=betamax_session)
+
+    store.upload('tests/files/sample_zip.zip')
+
+
+def test_upload_app_not_exists(betamax_session, auth):
+    """ Upload a new version of a non-existing extension. Expect program to exit. """
+    store = ChromeStore(client_id=auth['client_id'],
+                        client_secret=auth['client_secret'],
+                        refresh_token=auth['refresh_token'],
+                        app_id=auth['app_id']+"X",
+                        session=betamax_session)
+
+    with pytest.raises(SystemExit) as err:
+        store.upload('tests/files/sample_zip.zip')
+
+    assert err.value.code == 2
 
 
 def test_repack_crx():
