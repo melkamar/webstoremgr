@@ -1,6 +1,8 @@
 import requests
 import pytest
 import json
+import os
+import shutil
 from flexmock import flexmock
 import webstore_deployer.util as util
 
@@ -28,3 +30,19 @@ def test_read_json_key_ok():
 def test_read_json_key_fail():
     with pytest.raises(KeyError):
         util.read_json_key({"foo": "bar"}, "invalid")
+
+
+def test_unzip():
+    unzip_path = os.path.join('tests', 'files', 'temp_test_unzip')
+    shutil.rmtree(unzip_path, ignore_errors=True)
+    os.makedirs(unzip_path)
+
+    assert not os.path.exists(os.path.join(unzip_path, 'hello'))
+    util.unzip('tests/files/sample_zip.zip', unzip_path)
+
+    assert os.path.exists(os.path.join(unzip_path, 'hello'))
+    with open(os.path.join(unzip_path, 'hello')) as f:
+        txt = f.read()
+        assert txt == 'Sample content of zip \n'
+
+    shutil.rmtree(unzip_path, ignore_errors=True)
