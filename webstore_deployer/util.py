@@ -89,25 +89,25 @@ def custom_options(option_list):
     return ret_func
 
 
-def unzip(filename, temp_dir):
+def unzip(filename, dest_dir):
     """
     Unzip a file into the given folder. Contents of the folder will be erased if it exists. If it does not exist, it
      will be created.
 
     Args:
         filename(str): Name of the file to unzip.
-        temp_dir(str): Destination folder to which contents of the zipfile will be added.
+        dest_dir(str): Destination folder to which contents of the zipfile will be added.
 
     Returns:
 
     """
-    if os.path.exists(temp_dir):
-        shutil.rmtree(temp_dir)
-    os.mkdir(temp_dir)
+    if os.path.exists(dest_dir):
+        shutil.rmtree(dest_dir)
+    os.mkdir(dest_dir)
 
     zip_file = zipfile.ZipFile(filename)
-    logger.debug("Extracting {} to path {}".format(filename, temp_dir))
-    zip_file.extractall(temp_dir)
+    logger.debug("Extracting {} to path {}".format(filename, dest_dir))
+    zip_file.extractall(dest_dir)
     zip_file.close()
 
 
