@@ -1,5 +1,5 @@
 import click
-from webstore_manager import logging_helper, util, strings
+from webstore_manager import logging_helper, util, constants
 from . import chrome_store
 
 logger = logging_helper.get_logger(__file__)
@@ -13,7 +13,7 @@ def chrome():
 @chrome.command('init', short_help="initialize API key. Run this first.")
 @click.argument('client_id', required=True)
 def init(client_id):
-    print(strings.webstore_init_info.format(client_id))
+    print(constants.webstore_init_info.format(client_id))
 
 
 @chrome.command('auth', short_help="exchange code for auth token. Run this after init.")

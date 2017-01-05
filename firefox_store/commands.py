@@ -1,5 +1,5 @@
 import click
-from webstore_manager import logging_helper, util, strings
+from webstore_manager import logging_helper, util, constants
 from webstore_manager.util import custom_options
 from . import firefox_store
 

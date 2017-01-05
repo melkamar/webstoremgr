@@ -11,6 +11,7 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="chrome-webstore-deployer" />
+    <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/webstore_deployer/__main__.py" />
     <option name="PARAMETERS" value="chrome upload 768901070498-a3bf8bg0p0g8puvfhlb3e855etgkq923.apps.googleusercontent.com uThXpquoQV3bg-xqn70BTjYi 1/3KfLWfIkQwbQ-G3gIk27QYvqiNeRnAe6WdBzrqIPdHY bdlbejlblbmfpelebldgcffhiofgmjfm c:\Users\melka\work\git-checkouted\chrome-webstore-deployer\tests\files\ic.crx" />
     <option name="SHOW_COMMAND_LINE" value="false" />
