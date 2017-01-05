@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 import requests
 import shutil
+from contextlib import contextmanager
 
 from . import logging_helper
 
@@ -110,5 +111,27 @@ def unzip(filename, dest_dir):
     zip_file.extractall(dest_dir)
     zip_file.close()
 
+
+@contextmanager
+def pushd(directory):
+    """
+    Context managed function simulating pushd-popd bash builtins.
+
+    Use::
+
+       with pushd(directory):
+           pass
+
+    Args:
+        directory(str): Directory to pushd into.
+
+    Returns:
+        None
+    """
+
+    prev_dir = os.getcwd()
+    os.chdir(directory)
+    yield
+    os.chdir(prev_dir)
 
 atexit.register(clean)
