@@ -40,7 +40,6 @@ def clean():
 
 
 def handle_requests_response_status(response: requests.Response):
-
     try:
         response.raise_for_status()
     except requests.HTTPError as error:
@@ -133,5 +132,29 @@ def pushd(directory):
     os.chdir(directory)
     yield
     os.chdir(prev_dir)
+
+
+@contextmanager
+def temp_dir(directory):
+    """
+    Create an empty directory (or clean it if exists) for the span of the context.
+
+    Use::
+
+       with temp_dir(directory):
+           pass
+
+    Args:
+        directory(str): Directory to create.
+
+    Returns:
+        None
+    """
+
+    shutil.rmtree(directory, ignore_errors=True)
+    os.makedirs(directory)
+    yield
+    shutil.rmtree(directory, ignore_errors=True)
+
 
 atexit.register(clean)
