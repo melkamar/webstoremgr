@@ -70,7 +70,10 @@ def test_publish(betamax_session, auth):
                         app_id=auth['app_id'],
                         session=betamax_session)
 
-    store.publish(ChromeStore.TARGET_PUBLIC)
+    app_id = store.publish(ChromeStore.TARGET_TRUSTED)
+    assert app_id
+    assert app_id == store.app_id
+    assert app_id == auth['app_id']
 
 
 def test_repack_crx():
