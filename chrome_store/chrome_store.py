@@ -13,6 +13,10 @@ class ChromeStore(Store):
     Class representing Chrome Webstore. Holds info about the client, app and its refresh token.
     """
 
+    TARGET_PUBLIC = 0
+    TARGET_TRUSTED = 1
+
+
     def __init__(self, client_id, client_secret, refresh_token=None, app_id="", session=None):
         super().__init__(session)
         self.client_id = client_id
@@ -33,9 +37,9 @@ class ChromeStore(Store):
 
         # Note: webstore API documentation is inconsistent whether it requires publishTarget in headers or in URL
         # so I will use both, to be sure.
-        if target == "public":
+        if target == self.TARGET_PUBLIC:
             target = "default"
-        elif target == "trusted":
+        elif target == self.TARGET_TRUSTED:
             headers["publishTarget"] = "trustedTesters"
             target = "trustedTesters"
         else:
