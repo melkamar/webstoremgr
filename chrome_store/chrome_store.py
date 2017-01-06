@@ -16,7 +16,6 @@ class ChromeStore(Store):
     TARGET_PUBLIC = 0
     TARGET_TRUSTED = 1
 
-
     def __init__(self, client_id, client_secret, refresh_token=None, app_id="", session=None):
         super().__init__(session)
         self.client_id = client_id
@@ -53,12 +52,16 @@ class ChromeStore(Store):
         try:
             res_json = response.json()
             status = res_json['status']
-            if status:
+
+            if len(status) == 0 or (len(status) == 1 and status[0] == 'OK'):
+                self.app_id = res_json['item_id']
+                logger.info("Publishing completed. Item ID: {}".format(self.app_id))
+                return self.app_id
+            else:
                 logger.error("Status is not empty (something bad happened).")
                 logger.error("Response: {}".format(res_json))
                 exit(ErrorCodes.chrome_publish_bad_status)
-            else:
-                logger.info("Publishing completed. Item ID: {}".format(res_json['id']))
+
         except KeyError as error:
             logger.error("Key 'status' not found in returned JSON.")
             logger.error(error)
