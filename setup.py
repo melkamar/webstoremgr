@@ -30,6 +30,7 @@ setup(
             'webstore-deploy = webstore_manager.deployer:main'
         ]
     },
-    install_requires=['click>=6', 'requests', 'appdirs', 'PyJWT', 'pytest-runner'],
+    install_requires=['click>=6', 'requests', 'appdirs', 'PyJWT'],
+    setup_requires=['pytest-runner'],
     tests_require=['pytest', 'betamax', 'flexmock']
 )
