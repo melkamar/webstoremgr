@@ -1,5 +1,7 @@
 # Webstore Manager
 
+![Build status](https://travis-ci.org/melkamar/webstore-manager.svg?branch=master)
+
 This tool simplifies automated management of extensions for Chrome and Firefox. 
 
 It is a semester project at Czech Technical University in MI-PYT, Advanced Python.
