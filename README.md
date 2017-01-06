@@ -1,6 +1,6 @@
 # Webstore Manager
 
-![Build status](https://travis-ci.org/melkamar/webstore-manager.svg?branch=master)
+[![Build Status](https://travis-ci.org/melkamar/webstore-manager.svg?branch=master)](https://travis-ci.org/melkamar/webstore-manager)
 
 This tool simplifies automated management of extensions for Chrome and Firefox. 
 
