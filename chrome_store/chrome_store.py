@@ -76,7 +76,7 @@ class ChromeStore(Store):
             new_item(bool): If true, this is a new extension. If false, this is an update to an existing one.
 
         Returns:
-            Null
+            str: Item ID of the created or updated extension.
         """
         if new_item:
             logger.info("Uploading a new extension - new file: {}".format(filename))
@@ -118,14 +118,16 @@ class ChromeStore(Store):
                 logger.error("Response: {}".format(rjson))
                 exit(ErrorCodes.chrome_upload_app_not_found)
             else:
-                logger.info("Upload completed. Item ID: {}".format(rjson['id']))
+                self.app_id = rjson['id']
+                logger.info("Upload completed. Item ID: {}".format(self.app_id))
+                logger.info("Done.")
+                return self.app_id
+
         except KeyError as error:
             logger.error("Key 'uploadState' not found in returned JSON.")
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
             exit(ErrorCodes.chrome_upload_key_not_found)
-
-        logger.info("Done.")
 
     def generate_access_token(self):
         auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token, session=self.session)

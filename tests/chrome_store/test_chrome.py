@@ -1,5 +1,6 @@
 from chrome_store.chrome_store import ChromeStore
 from chrome_store.chrome_store import repack_crx
+from webstore_manager.constants import ErrorCodes
 import pytest
 
 import os
@@ -40,13 +41,26 @@ def test_upload_app_not_exists(betamax_session, auth):
     store = ChromeStore(client_id=auth['client_id'],
                         client_secret=auth['client_secret'],
                         refresh_token=auth['refresh_token'],
-                        app_id=auth['app_id']+"X",
+                        app_id=auth['app_id'] + "X",
                         session=betamax_session)
 
     with pytest.raises(SystemExit) as err:
         store.upload('tests/files/sample_zip.zip')
 
-    assert err.value.code == 2
+    assert err.value.code == ErrorCodes.chrome_upload_app_not_found
+
+
+def test_upload_new_item(betamax_session, auth):
+    store = ChromeStore(client_id=auth['client_id'],
+                        client_secret=auth['client_secret'],
+                        refresh_token=auth['refresh_token'],
+                        app_id=auth['app_id'],
+                        session=betamax_session)
+
+    app_id = store.upload('tests/files/sample_zip.zip', new_item=True)
+    assert app_id
+    assert app_id == store.app_id
+    assert app_id != auth['app_id']
 
 
 def test_repack_crx():

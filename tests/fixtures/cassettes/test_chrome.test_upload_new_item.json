@@ -1,0 +1,95 @@
+{
+  "recorded_with": "betamax/0.8.0",
+  "http_interactions": [
+    {
+      "request": {
+        "method": "POST",
+        "headers": {
+          "Connection": "keep-alive",
+          "Accept": "*/*",
+          "Accept-Encoding": "identity",
+          "Content-Length": "257",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "python-requests/2.12.2"
+        },
+        "body": {
+          "encoding": "utf-8",
+          "string": "redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&client_id=<CLIENT_ID>&refresh_token=<REFRESH_TOKEN>&client_secret=<CLIENT_SECRET>&grant_type=refresh_token"
+        },
+        "uri": "https://accounts.google.com/o/oauth2/token"
+      },
+      "response": {
+        "url": "https://accounts.google.com/o/oauth2/token",
+        "headers": {
+          "Content-Disposition": "attachment; filename=\"json.txt\"; filename*=UTF-8''json.txt",
+          "Server": "ESF",
+          "X-Content-Type-Options": "nosniff",
+          "Vary": "Accept-Encoding",
+          "Alt-Svc": "quic=\":443\"; ma=2592000; v=\"35,34\"",
+          "Pragma": "no-cache",
+          "Accept-Ranges": "none",
+          "Content-Type": "application/json; charset=utf-8",
+          "Date": "Fri, 06 Jan 2017 08:35:44 GMT",
+          "X-Frame-Options": "SAMEORIGIN",
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+          "Expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "Transfer-Encoding": "chunked",
+          "X-XSS-Protection": "1; mode=block"
+        },
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\n  \"access_token\" : \"<ACCESS_TOKEN>\",\n  \"expires_in\" : 3600,\n  \"token_type\" : \"Bearer\"\n}"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        }
+      },
+      "recorded_at": "2017-01-06T08:35:44"
+    },
+    {
+      "request": {
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer <ACCESS_TOKEN>",
+          "Accept": "*/*",
+          "Accept-Encoding": "identity",
+          "Content-Length": "415",
+          "x-goog-api-version": "2",
+          "Connection": "keep-alive",
+          "User-Agent": "python-requests/2.12.2"
+        },
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "uri": "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
+      },
+      "response": {
+        "url": "https://www.googleapis.com/upload/chromewebstore/v1.1/items",
+        "headers": {
+          "Server": "UploadServer",
+          "Alt-Svc": "quic=\":443\"; ma=2592000; v=\"35,34\"",
+          "Date": "Fri, 06 Jan 2017 08:35:54 GMT",
+          "Vary": "Origin",
+          "X-GUploader-UploadID": "AEnB2UrObEEDb96SuTm8A5wauDFM2N6cCHcoaCf87P8DolsAR1jgGKyx6cxD6hY2cGJ0-KD1eC_wSD3sv4HDo4dLBzJiFNyHFQ",
+          "Pragma": "no-cache",
+          "Expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "ETag": "\"zcKCbcvu6shTA9Iu7WA6nfbfCrA/Hfmz-kOpiSkKqxdHDUeCSrhvEfQ\"",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Content-Length": "94",
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate"
+        },
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"kind\":\"chromewebstore#item\",\"id\":\"mhdbilcoceloecheohngmbaplahhjbnn\",\"uploadState\":\"SUCCESS\"}"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        }
+      },
+      "recorded_at": "2017-01-06T08:35:54"
+    }
+  ]
+}
