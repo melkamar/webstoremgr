@@ -1,8 +1,8 @@
 import os
 
 import requests
-from webstore_manager import logging_helper
-from webstore_manager import util
+from webstore_manager import logging_helper, util
+from webstore_manager.constants import ErrorCodes
 from store.store import Store
 
 logger = logging_helper.get_logger(__file__)
@@ -40,7 +40,7 @@ class ChromeStore(Store):
             target = "trustedTesters"
         else:
             logger.error("Unknown publish target: {}".format(target))
-            exit(8)
+            exit(ErrorCodes.chrome_publish_bad_target)
 
         logger.debug("Making publish query to {}".format(self.publish_item_url.format(target)))
         response = self.session.post(self.publish_item_url.format(target),
@@ -52,19 +52,19 @@ class ChromeStore(Store):
             if status:
                 logger.error("Status is not empty (something bad happened).")
                 logger.error("Response: {}".format(res_json))
-                exit(9)
+                exit(ErrorCodes.chrome_publish_bad_status)
             else:
                 logger.info("Publishing completed. Item ID: {}".format(res_json['id']))
         except KeyError as error:
             logger.error("Key 'status' not found in returned JSON.")
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(4)
+            exit(ErrorCodes.chrome_upload_key_not_found)
         except ValueError:
             logger.error("Response could not be decoded as JSON.")
             logger.error("Response code: {}".format(response.status_code))
             logger.error("Response: {}".format(response.content))
-            exit(10)
+            exit(ErrorCodes.response_not_json)
 
     def upload(self, filename, new_item=False):
         """
@@ -85,7 +85,7 @@ class ChromeStore(Store):
 
         if not new_item and not self.app_id:
             logger.error("To upload a new version of an extension, supply the app_id parameter!")
-            exit(6)
+            exit(ErrorCodes.chrome_upload_no_appid)
 
         auth_token = self.generate_access_token()
 
@@ -108,7 +108,7 @@ class ChromeStore(Store):
         except requests.HTTPError as error:
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(3)
+            exit(ErrorCodes.chrome_upload_generic_error)
 
         try:
             rjson = response.json()
@@ -116,14 +116,14 @@ class ChromeStore(Store):
             if not state == 'SUCCESS':
                 logger.error("Uploading state is not SUCCESS.")
                 logger.error("Response: {}".format(rjson))
-                exit(2)
+                exit(ErrorCodes.chrome_upload_app_not_found)
             else:
                 logger.info("Upload completed. Item ID: {}".format(rjson['id']))
         except KeyError as error:
             logger.error("Key 'uploadState' not found in returned JSON.")
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(4)
+            exit(ErrorCodes.chrome_upload_key_not_found)
 
         logger.info("Done.")
 
@@ -170,7 +170,7 @@ class ChromeStore(Store):
         except requests.HTTPError as error:
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(1)
+            exit(ErrorCodes.response_error)
 
         res_json = response.json()
         return res_json['access_token'], res_json['refresh_token']
@@ -204,7 +204,7 @@ class ChromeStore(Store):
         except requests.HTTPError as error:
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
-            exit(1)
+            exit(ErrorCodes.response_error)
 
         res_json = response.json()
         return res_json['access_token']
