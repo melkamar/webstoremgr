@@ -5,15 +5,15 @@
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
-    <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/webstore_deployer" />
+    <option name="SDK_HOME" value="C:\Users\melka\work\git-checkouted\webstore-manager\virtualenv\Scripts\python.exe" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/webstore_manager" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
-    <module name="chrome-webstore-deployer" />
+    <module name="webstore-manager" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/webstore_deployer/__main__.py" />
-    <option name="PARAMETERS" value="chrome init 768901070498-a3bf8bg0p0g8puvfhlb3e855etgkq923.apps.googleusercontent.com" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/webstore_manager/__main__.py" />
+    <option name="PARAMETERS" value="chrome init 431277020184-kl0dk39s5vvkr709tog0n8rjrvigtioi.apps.googleusercontent.com" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <method />
   </configuration>
