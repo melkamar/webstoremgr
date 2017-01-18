@@ -3,7 +3,14 @@ import os
 
 
 class Functions:
-    def chrome_new(*args):
+    @staticmethod
+    def chrome_init(parser, client_id, client_secret, refresh_token):
+        parser.variables['client_id'] = client_id
+        parser.variables['client_secret'] = client_secret
+        parser.variables['client_id'] = refresh_token
+
+    @staticmethod
+    def chrome_new(parser, *args):
         print("chrome_new, args: {}".format(args))
 
 
@@ -34,7 +41,7 @@ class Parser:
 
         # actually execute
         func = self.functions[tokens[0]]
-        func(*tokens[1:])
+        func(self, *tokens[1:])
 
     def token_to_func(self, token):
         try:
