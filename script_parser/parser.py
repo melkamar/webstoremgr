@@ -4,9 +4,9 @@ import os
 from chrome_store import chrome_store
 
 
-class Functions:
+class ChromeFunctions:
     @staticmethod
-    def chrome_init(parser, client_id, client_secret, refresh_token):
+    def init(parser, client_id, client_secret, refresh_token):
         parser.variables['client_id'] = client_id
         parser.variables['client_secret'] = client_secret
         parser.variables['refresh_token'] = refresh_token
@@ -15,7 +15,7 @@ class Functions:
                                                                     refresh_token)
 
     @staticmethod
-    def chrome_new(parser, filename):
+    def new(parser, filename):
         try:
             store = parser.variables['chrome_store']
         except KeyError:
@@ -23,11 +23,47 @@ class Functions:
 
         store.upload(filename, True)
 
+    @staticmethod
+    def update(parser, appid, filename):
+        assert False
+
+    @staticmethod
+    def publish(parser, appid, filename):
+        assert False
+
+    @staticmethod
+    def check_version(parser, appid, filename):
+        assert False
+
+
+class GenericFunctions:
+    @staticmethod
+    def cd(parser, folder):
+        os.chdir(folder)
+
+    @staticmethod
+    def pushd(parser, folder):
+        parser.dirstack.append(os.getcwd())
+        os.chdir(folder)
+
+    @staticmethod
+    def popd(parser):
+        try:
+            os.chdir(parser.dirstack.pop())
+        except IndexError:
+            raise IndexError("No folder left on stack to pop into.")
+
 
 class Parser:
     functions = {
-        'chrome.init': Functions.chrome_init,
-        'chrome.new': Functions.chrome_new
+        'cd': GenericFunctions.cd,
+        'pushd': GenericFunctions.pushd,
+        'popd': GenericFunctions.popd,
+        'chrome.init': ChromeFunctions.init,
+        'chrome.new': ChromeFunctions.new,
+        'chrome.update': ChromeFunctions.update,
+        'chrome.publish': ChromeFunctions.publish,
+        'chrome.check_version': ChromeFunctions.check_version,
     }
 
     def __init__(self, script=None, script_fn=None):
@@ -41,6 +77,7 @@ class Parser:
             self.script = script
 
         self.variables = {}
+        self.dirstack = []
 
     def execute(self):
         for line in self.script:
