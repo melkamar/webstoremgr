@@ -7,7 +7,7 @@ class Functions:
     def chrome_init(parser, client_id, client_secret, refresh_token):
         parser.variables['client_id'] = client_id
         parser.variables['client_secret'] = client_secret
-        parser.variables['client_id'] = refresh_token
+        parser.variables['refresh_token'] = refresh_token
 
     @staticmethod
     def chrome_new(parser, *args):
@@ -16,6 +16,7 @@ class Functions:
 
 class Parser:
     functions = {
+        'chrome.init': Functions.chrome_init,
         'chrome.new': Functions.chrome_new
     }
 
