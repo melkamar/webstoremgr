@@ -3,6 +3,9 @@ import os
 import time
 
 from chrome_store import chrome_store
+from webstore_manager import logging_helper
+
+logger = logging_helper.get_logger(__file__)
 
 
 class ChromeFunctions:
@@ -62,6 +65,9 @@ class ChromeFunctions:
                 correct = True
                 break
 
+            logger.warn(
+                "Expecting version {}, but obtained {}. Will keep retrying for {} seconds.".format(expected_version,
+                                                                                                   version, timeout))
             time.sleep(5)
 
         if correct:
@@ -119,11 +125,18 @@ class Parser:
             self.execute_line(line)
 
     def execute_line(self, line: str):
-        if not line or line.strip().startswith("#"):
+        line = line.strip()
+
+        if not line or line.startswith("#"):
+            logger.debug("Skipping line: {}".format(line))
             return
 
-        tokens = line.strip().split(" ")
+        logger.debug("Executing line: {}".format(line))
+
+        tokens = line.split(" ")
         tokens = self.resolve_variables(tokens)
+
+        logger.debug("  tokens: {}".format(tokens))
 
         # if assignment, process it. If not, call it as a function
         if not self.process_assignment(line):
@@ -132,6 +145,7 @@ class Parser:
 
     def token_to_func(self, token):
         try:
+            logger.debug("  Trying to parse token {} as a function".format(token))
             return self.functions[token]
         except KeyError:
             raise FunctionNotDefinedException(token)
@@ -158,10 +172,8 @@ class Parser:
                 except KeyError:
                     raise VariableNotDefinedException(var)
 
-            print("{} -> {}".format(var, value))
             return value
         else:  # token is not a variable, just return it
-            print("{} is not a variable token".format(token))
             return token
 
     def process_assignment(self, line: str):
@@ -170,6 +182,7 @@ class Parser:
             left = res.group(1)
             right = res.group(2)
             self.variables[left] = right
+            logger.debug("  Assigning {} <- {}".format(left, right))
             return True
         else:
             return False
