@@ -1,5 +1,6 @@
 import re
 import os
+import time
 
 from chrome_store import chrome_store
 
@@ -48,8 +49,25 @@ class ChromeFunctions:
             raise ValueError('Unknown value {}. Expected one of public, trusted.'.format(target))
 
     @staticmethod
-    def check_version(parser, appid, filename):
-        assert False
+    def check_version(parser, expected_version, timeout=30):
+        store = ChromeFunctions.read_store(parser)
+        version = ''
+        timeout = int(timeout)  # if it was passed from the user, it will be a str
+
+        correct = False
+        start = time.time()
+        while time.time() - start < timeout:
+            version = store.get_uploaded_version()
+            if version == expected_version:
+                correct = True
+                break
+
+            time.sleep(5)
+
+        if correct:
+            pass
+        else:
+            raise ValueError("Expected version {}. Server reports {}.".format(expected_version, version))
 
 
 class GenericFunctions:

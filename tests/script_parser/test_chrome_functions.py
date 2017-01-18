@@ -92,3 +92,41 @@ def test_publish_no_init():
 
     with pytest.raises(parser.InvalidStateException):
         p.execute()
+
+
+def test_check_version():
+    p = parser.Parser('foo')
+    p.execute_line('chrome.init id secret ref')
+    p.execute_line('chrome.setapp appid')
+
+    mock_store = flexmock(p.variables['chrome_store'])  # Mock the store, do not actually send anything
+    mock_store.should_receive('get_uploaded_version').with_args().and_return('1.0.12345').once()
+    p.variables['chrome_store'] = mock_store
+
+    p.execute_line('chrome.check_version 1.0.12345')
+
+
+def test_check_version_incorrect():
+    p = parser.Parser('foo')
+    p.execute_line('chrome.init id secret ref')
+    p.execute_line('chrome.setapp appid')
+
+    mock_store = flexmock(p.variables['chrome_store'])  # Mock the store, do not actually send anything
+    mock_store.should_receive('get_uploaded_version').with_args().and_return('2.0.12345').at_most().twice()
+    p.variables['chrome_store'] = mock_store
+
+    with pytest.raises(ValueError):
+        p.execute_line('chrome.check_version 1.0.12345 1')
+
+
+def test_check_version_incorrect_longer_timeout():
+    p = parser.Parser('foo')
+    p.execute_line('chrome.init id secret ref')
+    p.execute_line('chrome.setapp appid')
+
+    mock_store = flexmock(p.variables['chrome_store'])  # Mock the store, do not actually send anything
+    mock_store.should_receive('get_uploaded_version').with_args().and_return('2.0.12345').at_least().times(3)
+    p.variables['chrome_store'] = mock_store
+
+    with pytest.raises(ValueError):
+        p.execute_line('chrome.check_version 1.0.12345 15')
