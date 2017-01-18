@@ -1,0 +1,16 @@
+SYNTAX
+
+var=abc -- assign abc to variable var
+${var} -- dereference variable var
+${env.something} -- get environment variable "something"
+
+chrome.init id secret refresh
+## chrome.gen_token id secret refresh
+chrome.new filename (zip)
+chrome.update appid filename (zip)
+chrome.publish appid target=public|trusted
+chrome.check_version appid version [timeout=30]
+
+cd folder
+unpack file
+zip folder zipname
