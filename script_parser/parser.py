@@ -33,13 +33,19 @@ class ChromeFunctions:
         store.upload(filename, True)
 
     @staticmethod
-    def update(parser, appid, filename):
+    def update(parser, filename):
         store = ChromeFunctions.read_store(parser)
-        store.upload()
+        store.upload(filename, False)
 
     @staticmethod
-    def publish(parser, appid, filename):
-        assert False
+    def publish(parser, target):
+        store = ChromeFunctions.read_store(parser)
+        if target == 'public':
+            store.publish(chrome_store.ChromeStore.TARGET_PUBLIC)
+        elif target == 'trusted':
+            store.publish(chrome_store.ChromeStore.TARGET_TRUSTED)
+        else:
+            raise ValueError('Unknown value {}. Expected one of public, trusted.'.format(target))
 
     @staticmethod
     def check_version(parser, appid, filename):
