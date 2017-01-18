@@ -16,6 +16,15 @@ def main(verbose):
     logging_helper.set_level(30 - verbose * 10)
 
 
+@main.command('script')
+@click.argument('file', required=True)
+def script(file):
+    logger.info("Executing script {}".format(file))
+    from script_parser.parser import Parser
+    p = Parser(script_fn=file)
+    p.execute()
+
+
 main.add_command(chrome_commands.chrome)
 main.add_command(firefox_commands.firefox)
 

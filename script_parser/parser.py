@@ -122,9 +122,10 @@ class Parser:
         tokens = line.strip().split(" ")
         tokens = self.resolve_variables(tokens)
 
-        # actually execute
-        func = self.functions[tokens[0]]
-        func(self, *tokens[1:])
+        # if assignment, process it. If not, call it as a function
+        if not self.process_assignment(line):
+            func = self.token_to_func(tokens[0])
+            func(self, *tokens[1:])
 
     def token_to_func(self, token):
         try:
@@ -159,6 +160,16 @@ class Parser:
         else:  # token is not a variable, just return it
             print("{} is not a variable token".format(token))
             return token
+
+    def process_assignment(self, line: str):
+        res = re.match(r'^\s*([^=\s\.]+)\s*=\s*([^=\s\.]+)\s*$', line)
+        if res:
+            left = res.group(1)
+            right = res.group(2)
+            self.variables[left] = right
+            return True
+        else:
+            return False
 
 
 class VariableNotDefinedException(Exception):
