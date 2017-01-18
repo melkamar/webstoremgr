@@ -119,6 +119,9 @@ class Parser:
             self.execute_line(line)
 
     def execute_line(self, line: str):
+        if not line or line.strip().startswith("#"):
+            return
+
         tokens = line.strip().split(" ")
         tokens = self.resolve_variables(tokens)
 
