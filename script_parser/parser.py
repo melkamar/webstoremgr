@@ -6,6 +6,13 @@ from chrome_store import chrome_store
 
 class ChromeFunctions:
     @staticmethod
+    def read_store(parser):
+        try:
+            return parser.variables['chrome_store']
+        except KeyError:
+            raise InvalidStateException('You must run chrome.new function before uploading an extension.')
+
+    @staticmethod
     def init(parser, client_id, client_secret, refresh_token):
         parser.variables['client_id'] = client_id
         parser.variables['client_secret'] = client_secret
@@ -15,17 +22,20 @@ class ChromeFunctions:
                                                                     refresh_token)
 
     @staticmethod
-    def new(parser, filename):
-        try:
-            store = parser.variables['chrome_store']
-        except KeyError:
-            raise InvalidStateException('You must run chrome.new function before uploading an extension.')
+    def set_app(parser, app_id):
+        store = ChromeFunctions.read_store(parser)
+        parser.variables['app_id'] = app_id
+        store.app_id = app_id
 
+    @staticmethod
+    def new(parser, filename):
+        store = ChromeFunctions.read_store(parser)
         store.upload(filename, True)
 
     @staticmethod
     def update(parser, appid, filename):
-        assert False
+        store = ChromeFunctions.read_store(parser)
+        store.upload()
 
     @staticmethod
     def publish(parser, appid, filename):
@@ -60,6 +70,7 @@ class Parser:
         'pushd': GenericFunctions.pushd,
         'popd': GenericFunctions.popd,
         'chrome.init': ChromeFunctions.init,
+        'chrome.setapp': ChromeFunctions.set_app,
         'chrome.new': ChromeFunctions.new,
         'chrome.update': ChromeFunctions.update,
         'chrome.publish': ChromeFunctions.publish,

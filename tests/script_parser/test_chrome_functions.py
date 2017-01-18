@@ -12,6 +12,17 @@ def test_init():
     assert p.variables['refresh_token'] == 'ref'
 
 
+def test_setapp():
+    p = parser.Parser(['chrome.init id secret ref'])
+    p.execute()
+    with pytest.raises(KeyError):
+        assert not p.variables['app_id']
+
+    p.execute_line('chrome.setapp appid')
+    assert p.variables['app_id'] == 'appid'
+    assert p.variables['chrome_store'].app_id == 'appid'
+
+
 def test_new():
     """ Test if chrome store's upload function is called as expected (after its initialization). """
     p = parser.Parser('foo')
