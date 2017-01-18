@@ -162,7 +162,7 @@ class Parser:
             return token
 
     def process_assignment(self, line: str):
-        res = re.match(r'^\s*([^=\s\.]+)\s*=\s*([^=\s\.]+)\s*$', line)
+        res = re.match(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$', line)
         if res:
             left = res.group(1)
             right = res.group(2)
