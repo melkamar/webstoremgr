@@ -1,6 +1,8 @@
 import re
 import os
 
+from chrome_store import chrome_store
+
 
 class Functions:
     @staticmethod
@@ -8,10 +10,18 @@ class Functions:
         parser.variables['client_id'] = client_id
         parser.variables['client_secret'] = client_secret
         parser.variables['refresh_token'] = refresh_token
+        parser.variables['chrome_store'] = chrome_store.ChromeStore(client_id,
+                                                                    client_secret,
+                                                                    refresh_token)
 
     @staticmethod
-    def chrome_new(parser, *args):
-        print("chrome_new, args: {}".format(args))
+    def chrome_new(parser, filename):
+        try:
+            store = parser.variables['chrome_store']
+        except KeyError:
+            raise InvalidStateException('You must run chrome.new function before uploading an extension.')
+
+        store.upload(filename, True)
 
 
 class Parser:
@@ -84,4 +94,8 @@ class VariableNotDefinedException(Exception):
 
 
 class FunctionNotDefinedException(Exception):
+    pass
+
+
+class InvalidStateException(Exception):
     pass
