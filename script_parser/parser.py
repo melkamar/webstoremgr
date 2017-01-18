@@ -3,8 +3,8 @@ import os
 
 
 class Functions:
-    def chrome_new(self):
-        print("chrome_new")
+    def chrome_new(*args):
+        print("chrome_new, args: {}".format(args))
 
 
 class Parser:
@@ -33,6 +33,8 @@ class Parser:
         tokens = self.resolve_variables(tokens)
 
         # actually execute
+        func = self.functions[tokens[0]]
+        func(*tokens[1:])
 
     def token_to_func(self, token):
         try:
