@@ -1,0 +1,97 @@
+{
+  "recorded_with": "betamax/0.8.0",
+  "http_interactions": [
+    {
+      "recorded_at": "2017-01-18T15:22:08",
+      "response": {
+        "headers": {
+          "Vary": "Accept-Encoding",
+          "Alt-Svc": "quic=\":443\"; ma=2592000; v=\"35,34\"",
+          "Expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "Accept-Ranges": "none",
+          "X-Frame-Options": "SAMEORIGIN",
+          "Transfer-Encoding": "chunked",
+          "Content-Type": "application/json; charset=utf-8",
+          "X-Content-Type-Options": "nosniff",
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+          "Date": "Wed, 18 Jan 2017 15:22:08 GMT",
+          "Content-Disposition": "attachment; filename=\"json.txt\"; filename*=UTF-8''json.txt",
+          "Server": "ESF",
+          "Pragma": "no-cache",
+          "X-XSS-Protection": "1; mode=block"
+        },
+        "url": "https://accounts.google.com/o/oauth2/token",
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\n  \"access_token\" : \"<ACCESS_TOKEN>\",\n  \"expires_in\" : 3600,\n  \"token_type\" : \"Bearer\"\n}"
+        }
+      },
+      "request": {
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "python-requests/2.12.2",
+          "Accept": "*/*",
+          "Accept-Encoding": "identity",
+          "Content-Length": "257",
+          "Connection": "keep-alive"
+        },
+        "uri": "https://accounts.google.com/o/oauth2/token",
+        "body": {
+          "encoding": "utf-8",
+          "string": "client_id=<CLIENT_ID>&refresh_token=<REFRESH_TOKEN>&client_secret=<CLIENT_SECRET>&grant_type=refresh_token&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob"
+        },
+        "method": "POST"
+      }
+    },
+    {
+      "recorded_at": "2017-01-18T15:22:08",
+      "response": {
+        "headers": {
+          "Vary": "Origin",
+          "Content-Type": "application/json; charset=UTF-8",
+          "Expires": "Wed, 18 Jan 2017 15:22:08 GMT",
+          "ETag": "\"zcKCbcvu6shTA9Iu7WA6nfbfCrA/-blXXN4HeOtwfJ7Qs6Xj_UX6aGg\"",
+          "X-Frame-Options": "SAMEORIGIN",
+          "Alt-Svc": "quic=\":443\"; ma=2592000; v=\"35,34\"",
+          "Content-Length": "596",
+          "Date": "Wed, 18 Jan 2017 15:22:08 GMT",
+          "Server": "GSE",
+          "Cache-Control": "private, max-age=0, must-revalidate, no-transform",
+          "X-Content-Type-Options": "nosniff",
+          "X-XSS-Protection": "1; mode=block"
+        },
+        "url": "https://www.googleapis.com/chromewebstore/v1.1/items/<APP_ID>?projection=draft",
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "body": {
+          "encoding": "UTF-8",
+          "string": "{\"kind\":\"chromewebstore#item\",\"id\":\"<APP_ID>\",\"publicKey\":\"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA06F1SfYp6ho9+z/ur6cD\\ndLMJgkn0kStcKRFG39ze7+DaL6rmuqEnlw0skVl1oA8sy7e+5okoOP7hgipGfC7q\\n9aZeW2zoFYanMxQwEnoVD7S2Cpcx4USABoKRD9CkLEhg9GCCY0oP735fN8G7qB+b\\nUpuSl4IRlbKQKaw12eo3WmMRYkX7tzyNyXpJH8YHmkegkx8t2mYIqHGkm5IGUink\\n1tfKLRIjiO8R+N0nlQYjniQPWVhcbsXfBrHB006ArD1VOObZEGPCf5AVMZzQt3qB\\nSyiMbRqIDkU4fvv/KktFxlzIml6Nqnj+DiZPzENftLaW2ZbXtNruGeZ8ZKOHU2XV\\nfQIDAQAB\\n-----END PUBLIC KEY-----\\n\",\"uploadState\":\"NOT_FOUND\",\"crxVersion\":\"1.0.12345\"}"
+        }
+      },
+      "request": {
+        "headers": {
+          "x-goog-api-version": "2",
+          "User-Agent": "python-requests/2.12.2",
+          "Accept": "*/*",
+          "Accept-Encoding": "identity",
+          "Expect": "",
+          "Authorization": "Bearer <ACCESS_TOKEN>",
+          "Content-Length": "0",
+          "Connection": "keep-alive"
+        },
+        "uri": "https://www.googleapis.com/chromewebstore/v1.1/items/<APP_ID>?projection=draft",
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "method": "GET"
+      }
+    }
+  ]
+}

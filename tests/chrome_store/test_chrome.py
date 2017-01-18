@@ -76,6 +76,17 @@ def test_publish(betamax_session, auth):
     assert app_id == auth['app_id']
 
 
+def test_check_status(betamax_session, auth):
+    store = ChromeStore(client_id=auth['client_id'],
+                        client_secret=auth['client_secret'],
+                        refresh_token=auth['refresh_token'],
+                        app_id=auth['app_id'],
+                        session=betamax_session)
+
+    version = store.get_uploaded_version()
+    assert version == '1.0.12345'
+
+
 def test_repack_crx():
     files_dir = os.path.join('tests', 'files')
     fn = os.path.join(files_dir, 'sample_crx.crx')

@@ -26,6 +26,7 @@ class ChromeStore(Store):
         self.new_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items"
         self.publish_item_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}/publish?publishTarget={{}}".format(
             app_id)
+        self.get_status_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}?projection=draft"
 
     def publish(self, target):
         auth_token = self.generate_access_token()
@@ -135,6 +136,45 @@ class ChromeStore(Store):
             logger.error(error)
             logger.error("Response: {}".format(response.json()))
             exit(ErrorCodes.chrome_upload_key_not_found)
+
+    def get_uploaded_version(self):
+        """
+        Finds version of an extension that is currently uploaded in the web store.
+
+        Returns:
+            str: Version as specified in the original manifest.
+        """
+        auth_token = self.generate_access_token()
+
+        headers = {"Authorization": "Bearer {}".format(auth_token),
+                   "x-goog-api-version": "2",
+                   "Content-Length": "0",
+                   "Expect": ""}
+
+        final_url = self.get_status_url.format(self.app_id)
+        logger.debug("Checking status at {}".format(final_url))
+        response = self.session.get(final_url,
+                                    headers=headers)
+
+        try:
+            res_json = response.json()
+            reported_version = res_json['crxVersion']
+            reported_state = res_json['uploadState']  # No use right now
+
+            logger.info("Status obtained. Item ID: {}, version: {}, state: {}".format(self.app_id, reported_version,
+                                                                                      reported_state))
+            return reported_version
+
+        except KeyError as error:
+            logger.error("Key 'crxVersion' or 'uploadState' not found in returned JSON.")
+            logger.error(error)
+            logger.error("Response: {}".format(response.json()))
+            exit(ErrorCodes.chrome_upload_key_not_found)
+        except ValueError:
+            logger.error("Response could not be decoded as JSON.")
+            logger.error("Response code: {}".format(response.status_code))
+            logger.error("Response: {}".format(response.content))
+            exit(ErrorCodes.response_not_json)
 
     def generate_access_token(self):
         auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token, session=self.session)
