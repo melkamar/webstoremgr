@@ -3,7 +3,7 @@ import os
 import time
 
 from chrome_store import chrome_store
-from webstore_manager import logging_helper
+from webstore_manager import logging_helper, util
 
 logger = logging_helper.get_logger(__file__)
 
@@ -75,6 +75,10 @@ class ChromeFunctions:
         else:
             raise ValueError("Expected version {}. Server reports {}.".format(expected_version, version))
 
+    @staticmethod
+    def unpack(parser):
+        assert False
+
 
 class GenericFunctions:
     @staticmethod
@@ -93,6 +97,10 @@ class GenericFunctions:
         except IndexError:
             raise IndexError("No folder left on stack to pop into.")
 
+    @staticmethod
+    def zip(parser, folder, zipname):
+        util.make_zip(zipname, os.path.join(os.getcwd(), folder), os.getcwd())
+
 
 class Parser:
     functions = {
@@ -105,6 +113,8 @@ class Parser:
         'chrome.update': ChromeFunctions.update,
         'chrome.publish': ChromeFunctions.publish,
         'chrome.check_version': ChromeFunctions.check_version,
+        'chrome.unpack': ChromeFunctions.unpack,
+        'zip': GenericFunctions.zip
     }
 
     def __init__(self, script=None, script_fn=None):
