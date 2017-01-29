@@ -6,9 +6,19 @@
 Welcome to Webstore Manager's documentation!
 ============================================
 
+Webstore Manager is a Chrome and Firefox extension manager.
+
+It provides a command-line interface for automatization of tasks such as creating an extension, uploading newer versions
+and publishing it.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   :glob:
+
+   installation
+   usage
+   browsers/*
 
 
 
