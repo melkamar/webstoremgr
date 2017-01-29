@@ -133,6 +133,11 @@ class Parser:
         self.variables = {}
         self.dirstack = []
 
+        self.patterns = {
+            'variable': re.compile(r'\s*\$\{([^}]+)\}\s*'),
+            'assignment': re.compile(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$')
+        }
+
     def execute(self):
         for line in self.script:
             self.execute_line(line)
@@ -171,7 +176,7 @@ class Parser:
         return res
 
     def resolve_variable(self, token: str):
-        match = re.match(r'\s*\$\{([^}]+)\}\s*', token)
+        match = re.match(self.patterns['variable'], token)
         if match:
             var = match.group(1)
             if var.startswith('env.'):
@@ -190,7 +195,7 @@ class Parser:
             return token
 
     def process_assignment(self, line: str):
-        res = re.match(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$', line)
+        res = re.match(self.patterns['assignment'], line)
         if res:
             left = res.group(1)
             right = res.group(2)
