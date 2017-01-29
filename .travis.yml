@@ -7,3 +7,8 @@ install:
 script:
 - python setup.py test --addopts -v
 - cd docs && make doctest
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
