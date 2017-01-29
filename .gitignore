@@ -147,3 +147,5 @@ crashlytics-build.properties
 fabric.properties
 
 /test.py
+
+.idea
