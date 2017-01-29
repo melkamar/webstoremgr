@@ -5,7 +5,7 @@ Currently only available for Google Chrome."""
 
 setup(
     name='webstoremgr',
-    version='0.5.3',
+    version='0.1',
     description='Publish browser extensions to their stores.',
     long_description=long_description,
     author='Martin Melka',
