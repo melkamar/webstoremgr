@@ -1,3 +1,6 @@
+import os
+import zipfile
+import shutil
 import pytest
 from flexmock import flexmock
 from script_parser import parser
@@ -104,6 +107,21 @@ def test_check_version():
     p.variables['chrome_store'] = mock_store
 
     p.execute_line('chrome.check_version 1.0.12345')
+
+
+def test_unpack():
+    zip_fn = 'tests/files/sample_zip.zip'
+    target_dir = 'tests/files/tempfolder'
+
+    p = parser.Parser('foo')
+    p.execute_line('chrome.unpack {} {}'.format(zip_fn, target_dir))
+
+    assert os.path.exists(zip_fn)
+
+    with open(os.path.join(target_dir, 'hello')) as f:
+        assert f.read().find("Sample content of zip") != -1  # Make sure expected content is present in archive
+
+    shutil.rmtree(target_dir)
 
 
 # def test_check_version_incorrect():
