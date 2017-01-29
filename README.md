@@ -4,62 +4,60 @@
 [![Documentation Status](https://readthedocs.org/projects/webstore-manager/badge/?version=latest)](http://webstore-manager.readthedocs.io/en/latest/?badge=latest)
 
 
-This tool simplifies automated management of extensions for Chrome and Firefox. 
-
-It is a semester project at Czech Technical University in MI-PYT, Advanced Python.
+This tool simplifies automated management of extensions for Chrome and Firefox. It provides a command line interface 
+for performing most common tasks.
 
 ## Functions
 ### Chrome
-* Unpack .crx archive and zip it (to prepare for uploading to Webstore)
-* Authenticate (OAuth)
-* Upload a new extension or update an existing one
-* Publish an extension to testers or to public
+* Authentication
+* Creating a new extension entry (from crx or zip archive)
+* Updating an existing extension
+* Publishing extensions (public/trusted)
 
 ### Firefox
-* Authenticate
-* Upload an extension
-* Download a processed and signed extension for manual distribution
-
-### Usage modes
-* Command-line mode - all parameters specified on command-line, invoke one command at a time
-* Scripting mode - commands may be passed to the tool as a script file
+* Authentication
+* Uploading an extension
+* Downloading a processed and signed extension
+    * _Useful when using a private CDN channel, as Firefox requires all extensions to be signed._
 
 
+## Documentation
+Detailed instructions can be found in the [documentation](http://webstore-manager.readthedocs.io/en/latest/?badge=latest).
 
-# Legacy README
+### Usage Modes
+* Command-line mode - all parameters specified on command-line, invoke one command at a time.
+* Scripting mode - commands invoked in a batch - as a script file.
 
 ## Installation
-To install `webstore-deployer` from Avast Artifactory, run the following command:
+Install `webstoremgr` from pypi: 
 
-```python -m pip install --extra-index-url https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local/simple webstore-deployer```
-
-## Usage
-General usage to get Chrome extension uploaded is:
-* Run ```webstore-deploy init <CLIENT_ID>``` and follow instructions on screen, then
-* Run ```webstore-deploy auth <CLIENT_ID> <CLIENT_SECRET> <CODE>``` with `<CODE>` returned from the previous step. Save the `refresh_token` returned.
-* Run ```webstore-deploy upload [--filetype=crx|zip] <CLIENT_ID> <CLIENT_SECRET> <REFRESH_TOKEN> <APP_ID> <FILENAME>```
+```python -m pip install webstoremgr```
 
 ### In Docker
-Ideally use our Avast lightweight Python image:
+I recommend using lightweight Alpine Linux Python3 image `frolvlad/alpine-python3`. Run using:
 ```
-docker run --rm docker.int.avast.com/avast/python:3.5 /bin/bash -c '
-   pip install --extra-index-url https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local/simple webstore-deployer;
-   webstore-deploy <...>'
+docker run -t --rm frolvlad/alpine-python3 /bin/sh -c '
+    pip install pytest-runner
+    pip install webstoremgr
+    webstoremgr <commands>
+'
 ```
 
-## Packaging
-To package and upload to Avast Artifactory:
-* Edit `$HOME/.pypirc` and add:
+Unfortunately, the lightweight image may have problems with downloading `pytest-runner` automatically as a dependency,
+so it needs to be downloaded explicitly. I am not sure what causes this yet. Full-fledged images (`ubuntu` etc) don't 
+have this problem.
 
-```
-[distutils]
-index-servers=
-    avast
+## Building from source
 
-[avast]
-repository: https://artifactory.srv.int.avast.com/artifactory/api/pypi/pypi-local
-username = <username>
-```
-* `python setup.py sdist`
-* `pip install twine` (if not present)
-* `twine upload -r avast .\dist\<file>.zip`
+To install from source, clone the repository and run `python setup.py install`. 
+
+### Tests
+Tests are written with `py.test`. To run them, use `python setup.py test`.
+
+Alternatively, you may directly run pytest: `python -m pytest` in the root of the repository. In this case make sure you
+have all testing dependencies installed.
+
+### Documentation
+Documentation lives in the `docs` folder. To build it, run `make html` or `make.bat html` on Linux or Windows, 
+respectively.
+
