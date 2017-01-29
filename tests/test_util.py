@@ -50,6 +50,9 @@ def test_makezip_nodest():
             assert txt.startswith('Sample bare content')
             archive.close()
 
+            os.remove(zip_name)
+            assert not os.path.exists(zip_name)
+
 
 def test_makezip_dest():
     zip_path = os.path.join(os.getcwd(), 'tests/files/sample_folder')
@@ -66,6 +69,9 @@ def test_makezip_dest():
         txt = archive.read('hello').decode("utf-8")
         assert txt.startswith('Sample bare content')
         archive.close()
+
+        os.remove(os.path.join(temp_path, zip_name))
+        assert not os.path.exists(os.path.join(temp_path, zip_name))
 
 
 def test_unzip():
