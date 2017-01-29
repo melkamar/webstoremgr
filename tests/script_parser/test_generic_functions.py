@@ -41,6 +41,9 @@ def test_cd():
     p.execute_line("cd tests")
     assert os.getcwd() == os.path.join(startdir, 'tests')
 
+    os.chdir(startdir)
+    assert os.getcwd() == startdir
+
 
 def test_zip():
     zip_fn = os.path.join(os.getcwd(), 'testzip.zip')
