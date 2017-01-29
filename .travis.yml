@@ -6,4 +6,4 @@ install:
 - pip install -r docs/requirements.txt
 script:
 - python setup.py test --addopts -v
-- cd docs && make doc
+- cd docs && make doctest
