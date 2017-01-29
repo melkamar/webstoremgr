@@ -149,3 +149,5 @@ fabric.properties
 /test.py
 
 .idea
+
+docs/_build
