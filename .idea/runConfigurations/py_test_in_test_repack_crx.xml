@@ -3,12 +3,12 @@
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs />
-    <option name="SDK_HOME" value="" />
+    <option name="SDK_HOME" value="C:\Users\Martin\venv-webstore-manager\Scripts\python.exe" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
-    <module name="chrome-webstore-deployer" />
+    <module name="pth" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="" />
     <option name="CLASS_NAME" value="" />
@@ -17,8 +17,8 @@
     <option name="TEST_TYPE" value="TEST_SCRIPT" />
     <option name="PATTERN" value="" />
     <option name="USE_PATTERN" value="false" />
-    <option name="testToRun" value="$PROJECT_DIR$" />
-    <option name="keywords" value="test_makezip_dest" />
+    <option name="testToRun" value="$PROJECT_DIR$/" />
+    <option name="keywords" value="test_unpack" />
     <option name="params" value="" />
     <option name="USE_PARAM" value="false" />
     <option name="USE_KEYWORD" value="true" />
