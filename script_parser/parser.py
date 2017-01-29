@@ -76,8 +76,11 @@ class ChromeFunctions:
             raise ValueError("Expected version {}. Server reports {}.".format(expected_version, version))
 
     @staticmethod
-    def unpack(parser):
-        assert False
+    def unpack(parser, archive, target):
+        target_dir = os.path.abspath(target)
+        os.makedirs(target_dir, exist_ok=True)
+
+        util.unzip(archive, target_dir)
 
 
 class GenericFunctions:
