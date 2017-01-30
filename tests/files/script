@@ -1,0 +1,2 @@
+xy = zdar
+chrome.init ab cd ${xy}

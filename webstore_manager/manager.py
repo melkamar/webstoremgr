@@ -3,6 +3,7 @@ import click
 from . import logging_helper, util
 from .chrome_store import commands as chrome_commands
 from .firefox_store import commands as firefox_commands
+from .script_parser.parser import Parser
 
 logger = logging_helper.get_logger(__file__)
 
@@ -21,7 +22,6 @@ def main(verbose):
 @click.argument('file', required=True)
 def script(file):
     logger.info("Executing script {}".format(file))
-    from script_parser.parser import Parser
     p = Parser(script_fn=file)
     p.execute()
 

@@ -2,7 +2,7 @@ import re
 import os
 import time
 
-from chrome_store import chrome_store
+from webstore_manager.chrome_store import chrome_store
 from webstore_manager import logging_helper, util
 
 logger = logging_helper.get_logger(__file__)
