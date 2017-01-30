@@ -87,7 +87,7 @@ def sign(ctx, jwt_issuer, jwt_secret, addon_id, version, filename, interval, att
     store.download(addon_id, version, folder, attempts, interval, target_name=target_name)
 
 
-@firefox.command('gen_token', short_help="Generate a JWT token used to authenticate in Mozilla store.")
+@firefox.command('gen-token', short_help="Generate a JWT token used to authenticate in Mozilla store.")
 @custom_options(_jwt_options)
 @click.pass_context
 def gen_token(ctx, jwt_issuer, jwt_secret):
