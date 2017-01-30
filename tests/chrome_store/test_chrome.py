@@ -1,11 +1,12 @@
-from chrome_store.chrome_store import ChromeStore
-from chrome_store.chrome_store import repack_crx
-from webstore_manager.constants import ErrorCodes
-import pytest
-
 import os
 import shutil
 import zipfile
+
+import pytest
+
+from webstore_manager.chrome_store.chrome_store import ChromeStore
+from webstore_manager.chrome_store.chrome_store import repack_crx
+from webstore_manager.constants import ErrorCodes
 
 
 def test_redeem_code(betamax_session, auth):

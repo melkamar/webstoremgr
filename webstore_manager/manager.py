@@ -1,7 +1,8 @@
 import click
-from chrome_store import commands as chrome_commands
+from .chrome_store import commands as chrome_commands
 from firefox_store import commands as firefox_commands
 from . import logging_helper, util
+
 
 logger = logging_helper.get_logger(__file__)
 

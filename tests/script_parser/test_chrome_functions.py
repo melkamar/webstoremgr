@@ -1,10 +1,11 @@
 import os
-import zipfile
 import shutil
+
 import pytest
 from flexmock import flexmock
+
+from webstore_manager.chrome_store.chrome_store import ChromeStore
 from script_parser import parser
-from chrome_store.chrome_store import ChromeStore
 
 
 def test_init():

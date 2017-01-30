@@ -1,6 +1,7 @@
 import click
-from webstore_manager import logging_helper, util, constants
+
 from . import chrome_store
+from webstore_manager import logging_helper, util, constants
 
 logger = logging_helper.get_logger(__file__)
 
