@@ -15,6 +15,7 @@ log_file = os.path.join(log_dir, "log")
 
 
 def init_logging():
+    """ Initialize app-wide logging. """
     logging.basicConfig(level=logging.DEBUG)
 
     # Set logging format for requests
@@ -30,11 +31,21 @@ init_logging()
 
 
 def set_level(level):
+    """ Set new logging level for all created loggers. """
     for logger in loggers:
         logger.setLevel(level)
 
 
 def get_logger(name):
+    """
+    Create a new logger with a given name, set its output file and add it to a list of all current loggers.
+
+    Args:
+        name: Name of the logger. Usually __file__.
+
+    Returns:
+        Newly created logger.
+    """
     logger = logging.getLogger(name)
     logger.propagate = False
 

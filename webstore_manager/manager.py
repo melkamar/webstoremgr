@@ -27,6 +27,7 @@ def script(file):
 
 main.add_command(chrome_commands.chrome)
 main.add_command(firefox_commands.firefox)
+# For any other platforms, add their commands here.
 
 if __name__ == '__main__':
     main()
