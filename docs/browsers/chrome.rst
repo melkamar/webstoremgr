@@ -24,6 +24,9 @@ Operations for Chrome are invoked as ``$ webstoremgr chrome <command>``. Paramet
     - ``filename``
         - Name of an extension file (.zip, .crx) on your filesystem.
 
+    - ``target``
+        - Audience for publishing. Two accepted values: ``public`` and ``trusted``.
+
 
 Supported Chrome Webstore commands are:
 
@@ -94,6 +97,48 @@ Supported Chrome Webstore commands are:
 
 Script mode
 -----------
+    Script mode for Chrome offers all functions of the command line tool. Heading of each list item is an example of
+    how to call the given function in a script. The given parameters correspond to command mode parameters, see
+    section above for details.
+
+    - ``chrome.init client_id client_secret refresh_token``
+        Initialize the Chrome store. Saves the given parameters as a global state which is used in subsequent steps.
+
+        **You must call this function before any others that require authentication.**
+
+    - ``chrome.setapp app_id``
+        Set the app_id parameter for future method calls.
+
+
+    - ``chrome.new filename``
+        Create a new extension from the archive pointed to by ``filename``. Calling this function will set the
+        internal ``app_id`` variable.
+
+        Only accepts ZIP archives. To upload a CRX, you need to run ``chrome.unpack`` and ``zip`` functions.
+        See :ref:`generic-functions`.
+
+
+    - ``chrome.update filename``
+        Update an existing extension. Its ID must be set by calling ``chrome.setapp`` first. Details are identical to
+        ``chrome.new`` function.
+
+    - ``chrome.publish target``
+        Publish an extension to the given target (``public`` or ``trusted``).
+
+        Its ID must be set by calling ``chrome.setapp`` first.
+
+
+    - ``chrome.check_version expected_version timeout``
+        Assertion function to check if the published version is the same as expected.
+
+        The currently published app is compared to the ``expected_version`` parameter. If they are not equal,
+        the comparison is repeated after several seconds until the ``timeout`` duration expires. If they are still
+        not equal, script terminates with a nonzero exit code.
+
+
+    - ``chrome.unpack archive target_dir``
+        Unpack a CRX file to the given target directory.
+
 
 
 .. _using webstore: https://developer.chrome.com/webstore/using_webstore_api#beforeyoubegin
