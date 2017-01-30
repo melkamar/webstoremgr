@@ -92,5 +92,8 @@ Supported Chrome Webstore commands are:
 
 
 
+Script mode
+-----------
+
 
 .. _using webstore: https://developer.chrome.com/webstore/using_webstore_api#beforeyoubegin

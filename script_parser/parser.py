@@ -150,7 +150,7 @@ class Parser:
 
         logger.debug("Executing line: {}".format(line))
 
-        tokens = line.split(" ")
+        tokens = line.split()
         tokens = self.resolve_variables(tokens)
 
         logger.debug("  tokens: {}".format(tokens))
@@ -196,7 +196,7 @@ class Parser:
     def process_assignment(self, tokens):
         if '=' in tokens:
             if not len(tokens) == 3:
-                raise ValueError("Assignment has to be 'var = value'. Parsed tokens: "+tokens)
+                raise ValueError("Assignment has to be 'var = value'. Parsed tokens: {}".format(tokens))
 
             left = tokens[0]
             right = tokens[2]
