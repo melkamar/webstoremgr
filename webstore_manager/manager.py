@@ -15,6 +15,8 @@ def main(verbose):
 
     logging_helper.set_level(30 - verbose * 10)
 
+    logger.info("Logging into file: {}".format(logging_helper.log_file))
+
 
 @main.command('script')
 @click.argument('file', required=True)
