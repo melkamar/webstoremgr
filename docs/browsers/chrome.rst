@@ -28,7 +28,7 @@ Operations for Chrome are invoked as ``$ webstoremgr chrome <command>``. Paramet
 Supported Chrome Webstore commands are:
 
     - ``init``
-        **Invocation:** ``webmgr init <client_id>``
+        **Invocation:** ``webstoremgr chrome init <client_id>``
 
         Prints information for the user on how to begin authentication. Chrome webstore requires an OAuth
         authentication which requires opening of the provided link in a web browser whilst signed in to Google.
@@ -40,7 +40,7 @@ Supported Chrome Webstore commands are:
         information anywhere.*
 
     - ``auth``
-        **Invocation:** ``webmgr auth <client_id> <client_secret> <code>``
+        **Invocation:** ``webstoremgr chrome auth <client_id> <client_secret> <code>``
 
         Exchanges your one-time code for a reusable ``refresh token`` which can be later used for authentication.
 
@@ -48,12 +48,12 @@ Supported Chrome Webstore commands are:
 
 
     - ``gen-token``
-        **Invocation:** ``webmgr gen-token <client_id> <client_secret> <refresh_token>``
+        **Invocation:** ``webstoremgr chrome gen-token <client_id> <client_secret> <refresh_token>``
 
         Use refresh token to generate an access token. The access token has a limited lifespan (1 hour).
 
     - ``create``
-        **Invocation:** ``webmgr create [-t,--filetype] <client_id> <client_secret> <refresh_token> <filename>``
+        **Invocation:** ``webstoremgr chrome create [-t,--filetype] <client_id> <client_secret> <refresh_token> <filename>``
 
         Optional parameter ``-t`` or ``--filetype`` specifies what type of archive the given file is.
         Accepted values are ``crx`` (default) or ``zip``.
@@ -63,7 +63,7 @@ Supported Chrome Webstore commands are:
         It will be assigned a new ``app_id``, this will be printed on the standard output.
 
     - ``upload``
-        **Invocation:** ``webmgr upload [-t,--filetype] <client_id> <client_secret> <refresh_token> <app_id> <filename>``
+        **Invocation:** ``webstoremgr chrome upload [-t,--filetype] <client_id> <client_secret> <refresh_token> <app_id> <filename>``
 
         Optional parameter ``-t`` or ``--filetype`` specifies what type of archive the given file is.
         Accepted values are ``crx`` (default) or ``zip``.
@@ -72,7 +72,7 @@ Supported Chrome Webstore commands are:
 
 
     - ``publish``
-        **Invocation:** ``webmgr publish --target <target> <client_id> <client_secret> <refresh_token> <app_id>``
+        **Invocation:** ``webstoremgr chrome publish --target <target> <client_id> <client_secret> <refresh_token> <app_id>``
 
         Parameter target specifies the audience of users to publish to. Accepted values are ``public`` or ``trusted``.
 
@@ -80,7 +80,7 @@ Supported Chrome Webstore commands are:
 
 
     - ``repack``
-        **Invocation:** ``webmgr repack <filename>``
+        **Invocation:** ``webstoremgr chrome repack <filename>``
 
         Transform a crx archive into a zip.
 
