@@ -60,3 +60,40 @@ syntax is ::
     webstoremgr script <filename>
 
 where ``filename`` is the script to execute.
+
+**Syntax**
+
+- One command per line.
+- Empty lines and lines starting with a hashtag (``#``) are ignored.
+- *Variable assignment*: ``ab=cd`` assigns value 'cd' into variable 'ab'.
+  Whitespaces are allowed, maximum of one ``=`` sign per line.
+- *Variable expansion*: ``${ab}`` is expanded with the value of ``ab``. From the previous example, ``${ab}`` would
+  equal ``cd`` when executing the script.
+- *Environment variables*: ``${env.xyz}`` is replaced with the environment variable ``xyz``.
+  Example: ``${env.PATH}`` is resolved to the contents of ``$PATH``.
+- *Command execution*: ``some.func ab cd ef`` executes function ``some.func`` with positional parameters ``ab``,
+  ``cd`` and ``ef``. For the list of commands, see below.
+- *Example*: this script sets three variables and call two functions with them as parameters. ::
+
+    id = ${env.clientid}
+    secret = ${env.secret}
+    ref = ${env.reftoken}
+    chrome.init ${id} ${secret} ${ref}
+    chrome.setapp abcdef
+
+**Generic functions**
+
+This is a list of generic functions, not directly tied to any platform. For the list of platform-specific functions,
+see :doc:`browsers/index`.
+
+- ``cd path``
+    Changes current working dir to ``path``.
+
+- ``pushd path``
+    Changes current working dir to ``path`` and saves previous path to internal stack.
+
+- ``popd``
+    Return to a dir previously set by ``pushd``.
+
+- ``zip folder filename``
+    Zips the contents of ``folder`` and saves the archive as a ``filename`` in the current working directory.

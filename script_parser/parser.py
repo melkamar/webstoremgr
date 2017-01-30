@@ -134,8 +134,8 @@ class Parser:
         self.dirstack = []
 
         self.patterns = {
-            'variable': re.compile(r'\s*\$\{([^}]+)\}\s*'),
-            'assignment': re.compile(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$')
+            'variable': re.compile(r'\s*\$\{([^}]+)\}\s*'),  # pattern of '  ${varname}  '
+            'assignment': re.compile(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$')  # pattern of '  xyz = abcdef  '
         }
 
     def execute(self):
