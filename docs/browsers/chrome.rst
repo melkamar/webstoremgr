@@ -115,7 +115,7 @@ Script mode
         internal ``app_id`` variable.
 
         Only accepts ZIP archives. To upload a CRX, you need to run ``chrome.unpack`` and ``zip`` functions.
-        See :ref:`generic-functions`.
+        See :ref:`generic functions <generic-functions>`.
 
 
     - ``chrome.update filename``

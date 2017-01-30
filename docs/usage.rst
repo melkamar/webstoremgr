@@ -81,6 +81,7 @@ where ``filename`` is the script to execute.
     chrome.init ${id} ${secret} ${ref}
     chrome.setapp abcdef
 
+
 .. _generic-functions:
 
 **Generic functions**
