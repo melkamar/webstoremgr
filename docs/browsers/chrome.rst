@@ -19,7 +19,7 @@ Operations for Chrome are invoked as ``$ webstoremgr chrome <command>``. Paramet
 
     - ``app_id``
         - ID of an extension as listed in the Dashboard. Click on More Info next to the extension to find out.
-        Its format is e.g. ``abcdefghijklmnopqrstuvwxyzabcdef``.
+          Its format is e.g. ``abcdefghijklmnopqrstuvwxyzabcdef``.
 
     - ``filename``
         - Name of an extension file (.zip, .crx) on your filesystem.
@@ -48,12 +48,12 @@ Supported Chrome Webstore commands are:
 
 
     - ``gen-token``
-        **Invocation: ** ``webmgr gen-token <client_id> <client_secret> <refresh_token>``
+        **Invocation:** ``webmgr gen-token <client_id> <client_secret> <refresh_token>``
 
         Use refresh token to generate an access token. The access token has a limited lifespan (1 hour).
 
     - ``create``
-        **Invocation: ** ``webmgr create [-t,--filetype] <client_id> <client_secret> <refresh_token> <filename>``
+        **Invocation:** ``webmgr create [-t,--filetype] <client_id> <client_secret> <refresh_token> <filename>``
 
         Optional parameter ``-t`` or ``--filetype`` specifies what type of archive the given file is.
         Accepted values are ``crx`` (default) or ``zip``.
@@ -63,7 +63,7 @@ Supported Chrome Webstore commands are:
         It will be assigned a new ``app_id``, this will be printed on the standard output.
 
     - ``upload``
-        **Invocation: ** ``webmgr upload [-t,--filetype] <client_id> <client_secret> <refresh_token> <app_id> <filename>``
+        **Invocation:** ``webmgr upload [-t,--filetype] <client_id> <client_secret> <refresh_token> <app_id> <filename>``
 
         Optional parameter ``-t`` or ``--filetype`` specifies what type of archive the given file is.
         Accepted values are ``crx`` (default) or ``zip``.
@@ -72,7 +72,7 @@ Supported Chrome Webstore commands are:
 
 
     - ``publish``
-        **Invocation: ** ``webmgr publish --target <target> <client_id> <client_secret> <refresh_token> <app_id>``
+        **Invocation:** ``webmgr publish --target <target> <client_id> <client_secret> <refresh_token> <app_id>``
 
         Parameter target specifies the audience of users to publish to. Accepted values are ``public`` or ``trusted``.
 
@@ -80,7 +80,7 @@ Supported Chrome Webstore commands are:
 
 
     - ``repack``
-        **Invocation: ** ``webmgr repack <filename>``
+        **Invocation:** ``webmgr repack <filename>``
 
         Transform a crx archive into a zip.
 
