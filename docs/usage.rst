@@ -18,6 +18,28 @@ There are two basic modes of function:
 Installing Webstore Manager creates an executable script, `webstoremgr`. It serves as a shortcut, it is functionally
 identical to running `python -m webstore_manager`. Through the documentation, `webstoremgr` is used.
 
+Generic arguments
+-----------------
+The following arguments are applicable for all running modes:
+
+- ``-v`` - **verbose**
+    Increases the level of verbosity. By default only *warn* and more critical messages are logged. This parameter may
+    be repeated (``-vv``) to achieve even more detailed output. See :ref:`logging` for details.
+
+
+.. _logging:
+
+Logging
+-------
+Logs are printed to standard output and to a file. The location is platform- and distribution-dependent.
+    - **Windows**: ``%LOCALAPPDATA%\melkamar\webstore_manager\Logs\``
+    - **Linux**: Depending on distribution. Examples:
+        - ``/var/tmp/webstore_manager``
+        - ``/user/.cache/webstore_manager/log``
+
+You can find the log location by enabling the verbose output.
+
+
 .. _command-mode:
 
 Command mode
@@ -32,3 +54,9 @@ List of commands differs based on the target browser. See the platform-specific 
 Script mode
 -----------
 
+Webstore Manager's scripting mode consumes a single script file that defines its function. The general invocation
+syntax is ::
+
+    webstoremgr script <filename>
+
+where ``filename`` is the script to execute.
