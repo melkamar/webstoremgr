@@ -1,7 +1,7 @@
 import click
 from chrome_store import commands as chrome_commands
 from firefox_store import commands as firefox_commands
-from . import logging_helper
+from . import logging_helper, util
 
 logger = logging_helper.get_logger(__file__)
 
@@ -10,12 +10,10 @@ logger = logging_helper.get_logger(__file__)
 @click.option('-v', '--verbose', count=True,
               help="Much verbosity. May be repeated multiple times. More v's, more info!")
 def main(verbose):
-    # TODO remove this, let user decide the verbosity level.
-    verbose = 2
-
     logging_helper.set_level(30 - verbose * 10)
 
     logger.info("Logging into file: {}".format(logging_helper.log_file))
+    logger.debug("Using temporary directory: {}".format(util.build_dir))
 
 
 @main.command('script')
