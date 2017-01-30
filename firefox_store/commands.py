@@ -24,9 +24,9 @@ _download_options = [
 ]
 
 _jwt_options = [
-    click.option('--client_id', 'jwt_issuer', required=True,
+    click.option('--id', 'jwt_issuer', required=True,
                  help="JWT issuer field of API credentials in Mozilla developer hub."),
-    click.option('--client_secret', 'jwt_secret', required=True,
+    click.option('--secret', 'jwt_secret', required=True,
                  help="JWT secret field of API credentials in Mozilla developer hub."),
 ]
 
