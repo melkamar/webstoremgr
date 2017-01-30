@@ -106,7 +106,11 @@ class GenericFunctions:
 
 
 class Parser:
-    functions = {
+    """
+    Class for parsing Webstore Manager commands in script mode. See HTML documentation for details.
+    """
+
+    functions = {  # Mapping of function names to actual python functions.
         'cd': GenericFunctions.cd,
         'pushd': GenericFunctions.pushd,
         'popd': GenericFunctions.popd,
@@ -121,6 +125,7 @@ class Parser:
     }
 
     def __init__(self, script=None, script_fn=None):
+        """ Initialize Parser with one and only one of script as string or script in a file. """
         super().__init__()
         if (not script and not script_fn) or (script and script_fn):
             raise ValueError("One of script or script_fn must be set!")
@@ -138,10 +143,16 @@ class Parser:
         }
 
     def execute(self):
+        """
+        Execute the script of this parser. Main function.
+        Returns:
+            None.
+        """
         for line in self.script:
             self.execute_line(line)
 
     def execute_line(self, line: str):
+        """ Execute a single line (i.e. one command). """
         line = line.strip()
 
         if not line or line.startswith("#"):
@@ -161,6 +172,17 @@ class Parser:
             func(self, *tokens[1:])
 
     def token_to_func(self, token):
+        """
+        Convert a token into a function object, if such mapping exists.
+        Args:
+            token(str): Token to convert.
+
+        Returns:
+            Function corresponding to the token.
+
+        Raises:
+            FunctionNotDefinedException: if no mapping between the token and function exists.
+        """
         try:
             logger.debug("  Trying to parse token {} as a function".format(token))
             return self.functions[token]
@@ -168,6 +190,17 @@ class Parser:
             raise FunctionNotDefinedException(token)
 
     def resolve_variables(self, tokens):
+        """
+        Expand all variables in the given tokens.
+
+        Variables are any tokens that have the form of ${name}.
+
+        Args:
+            tokens(list of str): List of tokens to expand.
+
+        Returns:
+            A new list of tokens, in which all variables have been expanded.
+        """
         res = []
         for token in tokens:
             res.append(self.resolve_variable(token))
@@ -175,6 +208,17 @@ class Parser:
         return res
 
     def resolve_variable(self, token: str):
+        """
+        Expand a variable. If a given token is not a variable, just return it.
+
+        Args:
+            token: Token to try and expand.
+
+        Returns:
+            str: Expanded value of the token if it was a variable or its original content if it was not.
+
+        Raises VariableNotDefinedException: If a given token was a variable, but it had no assigned value.
+        """
         match = re.match(self.patterns['variable'], token)
         if match:
             var = match.group(1)
@@ -194,6 +238,18 @@ class Parser:
             return token
 
     def process_assignment(self, tokens):
+        """
+        Process a line as a value assignment.
+
+        Updates internally stored variables of the Parser object. They are accessible in the variables field.
+
+        Args:
+            tokens(list of str): List of tokens to process.
+
+        Returns:
+            True if the list of tokens was a valid assignment, False otherwise.
+
+        """
         if '=' in tokens:
             if not len(tokens) == 3:
                 raise ValueError("Assignment has to be 'var = value'. Parsed tokens: {}".format(tokens))
