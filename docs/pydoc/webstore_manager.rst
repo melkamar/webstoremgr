@@ -1,15 +1,13 @@
 webstore_manager package
 ========================
 
-Submodules
-----------
+Core workflow of the program. Wraps around the individual browser platforms' functionality.
 
 webstore_manager.constants module
 ---------------------------------
 
 .. automodule:: webstore_manager.constants
     :members:
-    :undoc-members:
     :show-inheritance:
 
 webstore_manager.logging_helper module
@@ -17,7 +15,6 @@ webstore_manager.logging_helper module
 
 .. automodule:: webstore_manager.logging_helper
     :members:
-    :undoc-members:
     :show-inheritance:
 
 webstore_manager.manager module
@@ -25,7 +22,6 @@ webstore_manager.manager module
 
 .. automodule:: webstore_manager.manager
     :members:
-    :undoc-members:
     :show-inheritance:
 
 webstore_manager.util module
@@ -33,14 +29,4 @@ webstore_manager.util module
 
 .. automodule:: webstore_manager.util
     :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: webstore_manager
-    :members:
-    :undoc-members:
     :show-inheritance:
