@@ -3,9 +3,11 @@ from setuptools import setup, find_packages
 long_description = """Publish browser extensions to their stores.
 Currently only available for Google Chrome."""
 
+version_file = open('VERSION')
+
 setup(
     name='webstoremgr',
-    version='0.6.0',
+    version=version_file.read().strip(),
     description='Publish browser extensions to their stores.',
     long_description=long_description,
     author='Martin Melka',
