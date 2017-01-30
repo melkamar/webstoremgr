@@ -56,7 +56,8 @@ def upload(client_id, client_secret, refresh_token, app_id, filename, filetype):
         filename = chrome_store.repack_crx(filename)
 
     store = chrome_store.ChromeStore(client_id, client_secret, refresh_token, app_id=app_id)
-    store.upload(filename)
+    app_id = store.upload(filename)
+    print(app_id)
 
 
 @chrome.command('create', short_help="upload a brand new extension.")
@@ -77,7 +78,8 @@ def create(client_id, client_secret, refresh_token, filename, filetype):
         filename = chrome_store.repack_crx(filename)
 
     store = chrome_store.ChromeStore(client_id, client_secret, refresh_token)
-    store.upload(filename, True)
+    app_id = store.upload(filename, True)
+    print(app_id)
 
 
 @chrome.command('publish', short_help="publish extension to public or trusted audience.")
