@@ -3,7 +3,7 @@ import os
 import requests
 from webstore_manager import logging_helper, util
 from webstore_manager.constants import ErrorCodes
-from store.store import Store
+from webstore_manager.store.store import Store
 
 logger = logging_helper.get_logger(__file__)
 
