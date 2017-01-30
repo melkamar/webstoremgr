@@ -135,7 +135,6 @@ class Parser:
 
         self.patterns = {
             'variable': re.compile(r'\s*\$\{([^}]+)\}\s*'),  # pattern of '  ${varname}  '
-            'assignment': re.compile(r'^\s*([^=\s\.]+)\s*=\s*([^=\s]+)\s*$')  # pattern of '  xyz = abcdef  '
         }
 
     def execute(self):
@@ -157,7 +156,7 @@ class Parser:
         logger.debug("  tokens: {}".format(tokens))
 
         # if assignment, process it. If not, call it as a function
-        if not self.process_assignment(line):
+        if not self.process_assignment(tokens):
             func = self.token_to_func(tokens[0])
             func(self, *tokens[1:])
 
@@ -194,11 +193,13 @@ class Parser:
         else:  # token is not a variable, just return it
             return token
 
-    def process_assignment(self, line: str):
-        res = re.match(self.patterns['assignment'], line)
-        if res:
-            left = res.group(1)
-            right = res.group(2)
+    def process_assignment(self, tokens):
+        if '=' in tokens:
+            if not len(tokens) == 3:
+                raise ValueError("Assignment has to be 'var = value'. Parsed tokens: "+tokens)
+
+            left = tokens[0]
+            right = tokens[2]
             self.variables[left] = right
             logger.debug("  Assigning {} <- {}".format(left, right))
             return True

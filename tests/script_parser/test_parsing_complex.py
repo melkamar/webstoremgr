@@ -1,4 +1,5 @@
 from script_parser import parser
+from flexmock import flexmock
 import os
 
 
@@ -15,3 +16,33 @@ def test_environ_init():
     assert p.variables['client_id'] == 'x'
     assert p.variables['client_secret'] == 'y'
     assert p.variables['refresh_token'] == 'z'
+
+
+def test_multiple_commands():
+    """ Advanced scenario. Set environment, assign environment to local vars, use those to call several functions. """
+
+    cli = 'cli'
+    sec = 'sec'
+    ref = 'ref'
+    app = 'app'
+
+    os.environ['clientid'] = cli
+    os.environ['secret'] = sec
+    os.environ['reftoken'] = ref
+
+    script = ['id = ${env.clientid}',
+              'secret = ${env.secret}',
+              'ref = ${env.reftoken}',
+              'chrome.init ${id} ${secret} ${ref}',
+              'chrome.setapp {}'.format(app), ]
+
+    p = parser.Parser(script=script)
+
+    foo_obj = flexmock()
+    foo_obj.should_receive('chromeinit').with_args(p, cli, sec, ref).once()
+    foo_obj.should_receive('chromesetapp').with_args(p, app).once()
+
+    p.functions['chrome.init'] = foo_obj.chromeinit
+    p.functions['chrome.setapp'] = foo_obj.chromesetapp
+
+    p.execute()
