@@ -1,5 +1,5 @@
-Chrome and Webstore Manager
-===========================
+Google Chrome
+=============
 
 .. _chrome-commands:
 

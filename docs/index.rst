@@ -18,7 +18,7 @@ and publishing it.
 
    installation
    usage
-   browsers/*
+   browsers/index
    pydoc/index
 
 

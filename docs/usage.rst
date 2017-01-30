@@ -22,13 +22,10 @@ identical to running `python -m webstore_manager`. Through the documentation, `w
 
 Command mode
 ------------
-Commands are invoked on the command line, such as: ``webstoremgr chrome create arguments...``.
+Commands are invoked on the command line, such as: ``webstoremgr chrome create <arguments>``.
 
-List of commands differs based on the target browser. See their respective sections for more details:
-
-- :ref:`chrome-commands`
-
-- :ref:`firefox-commands`
+List of commands differs based on the target browser. See the platform-specific documentation
+:doc:`here <browsers/index>`.
 
 .. _script-mode:
 
