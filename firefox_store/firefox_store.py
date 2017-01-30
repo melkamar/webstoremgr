@@ -27,6 +27,7 @@ class FFStore(Store):
         Args:
             jwt_issuer(str): JWT Issuer field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
             jwt_secret(str): JWT Secret field obtained in Mozilla's Addon Developer Hub from Manage API keys section.
+            session: If none, a new requests session will be created. Otherwise the supplied one will be used.
         """
         super().__init__(session)
         self.jwt_issuer = jwt_issuer

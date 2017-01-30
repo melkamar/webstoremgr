@@ -17,6 +17,14 @@ class ChromeStore(Store):
     TARGET_TRUSTED = 1
 
     def __init__(self, client_id, client_secret, refresh_token=None, app_id="", session=None):
+        """
+        Args:
+            client_id:
+            client_secret:
+            refresh_token:
+            app_id:
+            session: If none, a new requests session will be created. Otherwise the supplied one will be used.
+        """
         super().__init__(session)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -29,6 +37,16 @@ class ChromeStore(Store):
         self.get_status_url = "https://www.googleapis.com/chromewebstore/v1.1/items/{}?projection=draft"
 
     def publish(self, target):
+        """
+        Publish an existing extension. It has to be uploaded to the Webstore first, its name is obtained from
+        the ChromeStore's app_id field.
+
+        Args:
+            target: Target audience to publish to. May be ChromeStore.TARGET_PUBLIC or TARGET_TRUSTED.
+
+        Returns:
+            None
+        """
         auth_token = self.generate_access_token()
 
         headers = {"Authorization": "Bearer {}".format(auth_token),
@@ -177,11 +195,28 @@ class ChromeStore(Store):
             exit(ErrorCodes.response_not_json)
 
     def generate_access_token(self):
+        """
+        Generate a new access token from a saved refresh token.
+
+        Returns:
+            Access token.
+
+        """
         auth_token = self.gen_access_token(self.client_id, self.client_secret, self.refresh_token, session=self.session)
         logger.info("Obtained an auth token: {}".format(auth_token))
         return auth_token
 
     def authenticate(self, code):
+        """
+        Authenticate by exchanging a given code for a refresh token.
+
+        Save the refresh token as a field of this ChromeStore object.
+        Args:
+            code: Code obtained from Google.
+
+        Returns:
+            None.
+        """
         _, self.refresh_token = ChromeStore.redeem_code(self.client_id, self.client_secret, code, self.session)
 
     @staticmethod

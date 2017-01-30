@@ -1,5 +1,5 @@
-PyDoc of source code
-====================
+Source code documentation
+=========================
 
 .. toctree::
     :maxdepth: 2
