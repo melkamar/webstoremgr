@@ -19,7 +19,7 @@ and publishing it.
    installation
    usage
    browsers/*
-
+   pydoc/index
 
 
 Indices and tables
