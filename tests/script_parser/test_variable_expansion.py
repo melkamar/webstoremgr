@@ -1,4 +1,4 @@
-from script_parser import parser
+from webstore_manager.script_parser import parser
 import pytest
 
 import os

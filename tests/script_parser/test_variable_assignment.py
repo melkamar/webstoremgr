@@ -1,6 +1,6 @@
 import pytest
 
-from script_parser import parser
+from webstore_manager.script_parser import parser
 
 
 @pytest.mark.parametrize(["command", "var", "value"],

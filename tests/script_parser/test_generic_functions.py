@@ -2,7 +2,7 @@ import os
 import pytest
 import shutil
 import zipfile
-from script_parser import parser
+from webstore_manager.script_parser import parser
 
 
 def test_pushd_popd():

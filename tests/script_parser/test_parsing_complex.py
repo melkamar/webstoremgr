@@ -1,6 +1,8 @@
-from script_parser import parser
-from flexmock import flexmock
 import os
+
+from flexmock import flexmock
+
+from webstore_manager.script_parser import parser
 
 
 def test_environ_init():
