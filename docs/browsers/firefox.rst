@@ -18,6 +18,8 @@ Operations for Mozilla Firefox are invoked as ``$ webstoremgr firefox <command>`
         - Extension ID and Version. Specified in the ``install.rdf`` manifest file as ``<em:id>``
           and ``<em:version>`` fields, respectively. For more information, refer to `Install Manifests`_.
 
+The usecase for Firefox now only supports self-distributed extensions. Mozilla needs to sign such extensions,
+which is what Webstore Manager offers.
 
 Supported Firefox addon commands are:
     - ``gen-token``
