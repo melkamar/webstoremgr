@@ -7,7 +7,7 @@ logger = logging_helper.get_logger(__file__)
 
 _upload_options = [
     click.option('--filename', required=True, help="File to sign."),
-    click.option('--addon_id', required=False,
+    click.option('--addon-id', 'addon_id', required=False,
                  help="ID of the extension. If not provided, it will be parsed from the file."),
     click.option('--version', required=False,
                  help="Version of the extension. If not provided, it will be parsed from the file.")
@@ -19,8 +19,9 @@ _download_options = [
     click.option('--attempts', default=10,
                  help="Number of polling attempts to download given extension from Mozilla store."),
     click.option('--folder', help="Target folder for the download."),
-    click.option('--target_name', help="Target filename to save the extension as. Only applicable if the downloads "
-                                       "contains a single file. It is ignored otherwise."),
+    click.option('--target-name', 'target_name',
+                 help="Target filename to save the extension as. Only applicable if the downloads "
+                      "contains a single file. It is ignored otherwise."),
 ]
 
 _jwt_options = [
@@ -59,7 +60,7 @@ def upload(ctx, jwt_issuer, jwt_secret, filename, addon_id, version):
 
 @firefox.command('download', short_help="Download a xpi extension on Mozilla store.")
 @custom_options(_jwt_options)
-@click.option('--addon_id', required=False, help="ID of the extension.")
+@click.option('--addon_id', required=True, help="ID of the extension.")
 @click.option('--version', required=True, help="Version of the extension.")
 @custom_options(_download_options)
 @click.pass_context
