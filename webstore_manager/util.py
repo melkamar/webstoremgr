@@ -16,6 +16,17 @@ work_dir = os.getcwd()
 
 
 def make_zip(zip_name, path, dest_dir=None):
+    """
+
+    Args:
+        zip_name(str): Name of the new zip archive.
+        path(str): Root folder of the path to zip.
+        dest_dir(str, optional): If set, place the created zip to this directory.
+
+    Returns:
+        Name of the created zip archive.
+    """
+
     if dest_dir:
         zip_name = os.path.join(dest_dir, zip_name)
 
@@ -40,6 +51,18 @@ def clean():
 
 
 def handle_requests_response_status(response: requests.Response):
+    """
+    Check if requests HTTP response is an error. If yes, log this error and pass the exception along.
+
+    Args:
+        response(requests.Response): Response object to test for errors.
+
+    Returns:
+        None.
+
+    Raises:
+        requests.HTTPError
+    """
     try:
         response.raise_for_status()
     except requests.HTTPError as error:
