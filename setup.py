@@ -4,10 +4,12 @@ long_description = """Publish browser extensions to their stores.
 Currently only available for Google Chrome."""
 
 version_file = open('VERSION')
+ver = version_file.read().strip()
+version_file.close()
 
 setup(
     name='webstoremgr',
-    version=version_file.read().strip(),
+    version=ver,
     description='Publish browser extensions to their stores.',
     long_description=long_description,
     author='Martin Melka',
