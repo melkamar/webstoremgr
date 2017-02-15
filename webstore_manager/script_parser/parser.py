@@ -30,6 +30,7 @@ class ChromeFunctions:
         store = ChromeFunctions.read_store(parser)
         parser.variables['app_id'] = app_id
         store.app_id = app_id
+        store.update_item_url = "https://www.googleapis.com/upload/chromewebstore/v1.1/items/{}".format(app_id)
 
     @staticmethod
     def new(parser, filename):
