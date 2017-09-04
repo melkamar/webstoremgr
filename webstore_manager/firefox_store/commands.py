@@ -48,13 +48,6 @@ def firefox():
 def upload(ctx, jwt_issuer, jwt_secret, filename, addon_id, version):
     store = firefox_store.FFStore(jwt_issuer, jwt_secret)
 
-    if not addon_id or not version:
-        parsed_id, parsed_version = store.parse_manifest(filename)
-        if not addon_id:
-            addon_id = parsed_id
-        if not version:
-            version = parsed_version
-
     store.upload(filename, addon_id, version)
 
 

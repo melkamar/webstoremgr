@@ -1,13 +1,11 @@
-# Original script developed by Filip Masri
-
 import os
 import random
 import time
 import urllib.parse
+import json
 
 import jwt
 import requests
-import re
 
 from webstore_manager import logging_helper, util
 from webstore_manager.store.store import Store
@@ -67,46 +65,34 @@ class FFStore(Store):
     @staticmethod
     def parse_manifest(filename):
         """
-        Parse Firefox extension id and version from the given xpi file. The attributes are expected to be located in
-        `install.rdf` inside <em:id> and <em:version> tags.
+        Parse extension ID and version from a zipped extension archive.
 
         Args:
-            filename(str): Name of the xpi file.
+            filename(str): Name of the WebExtension archive.
 
         Returns:
             tuple: (id, version)
 
         Raises:
-            KeyError:if ID or Version cannot be parsed from the file.
+            KeyError: if ID or Version cannot be parsed from the file.
         """
 
         temp_dir = os.path.join(util.build_dir, os.path.basename(filename))
 
-        # Extract xpi
+        # Extract archive
         util.unzip(filename, temp_dir)
 
-        # Read install.rdf manifest and parse
-        with open(os.path.join(temp_dir, "install.rdf")) as f:
-            txt = f.read()
+        # Read manifest.json manifest and parse
+        with open(os.path.join(temp_dir, "manifest.json")) as f:
+            manifest_json = json.load(f)
             # ID
-            search = re.search(r'<em:id>([^<]*)</em:id>', txt)
-            if search:
-                ext_id = search.group(1)
-            else:
-                ext_id = None
-
-            # Version
-            search = re.search(r'<em:version>([^<]*)</em:version>', txt)
-            if search:
-                ext_version = search.group(1)
-            else:
-                ext_version = None
-
-            if ext_id and ext_version:
-                return ext_id, ext_version
-            else:
-                raise KeyError(
-                    "Version or ID could not be parsed. Obtained ID:{}, Version:{}".format(ext_id, ext_version))
+            try:
+                id = manifest_json['applications']['gecko']['id']
+                version = manifest_json['version']
+                return id, version
+            except KeyError as err:
+                raise KeyError('Could not find applications.gecko.id and/or version keys in the manifest.json file.') \
+                    from err
 
     def _get_addon_status(self, addon_id, addon_version):
         """
@@ -188,7 +174,7 @@ class FFStore(Store):
             logger.debug("Addon processed, proceed with download. Obtained URLs: {}".format(urls))
 
         if not folder:
-            folder = util.build_dir
+            folder = os.getcwd()
 
         # if folder does not exist, create it
         if not os.path.exists(folder):
@@ -231,11 +217,14 @@ class FFStore(Store):
         """
         # If no version was specified, try parsing it from the file.
         if not addon_version:
-            parsed_version = self.parse_manifest(filename)
-            if not parsed_version:
-                logger.error("Version could not be parsed from file {}. Check the install.rdf file or specify the "
+            try:
+                parsed_id, parsed_version = self.parse_manifest(filename)
+            except KeyError as err:
+                logger.error("Version could not be parsed from file {}. Check the manifest.json file or specify the "
                              "version yourself.".format(filename))
+                logger.exception(err)
                 return False
+            addon_id = parsed_id
             addon_version = parsed_version
 
         logger.info("Uploading file {}. ID: {}, version: {}.".format(filename, addon_id, addon_version))
