@@ -13,6 +13,10 @@ from webstore_manager.store.store import Store
 logger = logging_helper.get_logger(__file__)
 
 
+class NotProcessedError(Exception):
+    """Raised if the extension is not signed and attempts timed out."""
+
+
 class FFStore(Store):
     """
     Class representing Mozilla Add-on store.
@@ -120,6 +124,7 @@ class FFStore(Store):
         except requests.HTTPError:
             exit(3)
 
+        logger.debug('Addon status json: {}'.format(response.json()))
         processed = util.read_json_key(response.json(), 'processed')
 
         urls = []
@@ -168,8 +173,8 @@ class FFStore(Store):
                 time.sleep(interval)
 
         if not processed:
-            logger.error("Addon was not processed in time. Consider increasing number of attempts or interval.")
-            return False
+            raise NotProcessedError("Addon was not processed in time. "
+                                    "Consider increasing number of attempts or interval.")
         else:
             logger.debug("Addon processed, proceed with download. Obtained URLs: {}".format(urls))
 
