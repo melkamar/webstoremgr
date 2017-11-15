@@ -224,6 +224,10 @@ class FFStore(Store):
                     logger.error('Validation ended with errors!')
                     logger.error(validation_results.print())
                     raise ValidationFailedError
+                else:
+                    if validation_results.warnings or validation_results.errors:
+                        logger.warning('Validation succeeded but with warnings!')
+                        logger.warning(validation_results.print())
 
             # Check both processed flag and if urls is not empty.
             # FF store may sometimes return processed=True but empty URL list, which is only filled up at the next call.
