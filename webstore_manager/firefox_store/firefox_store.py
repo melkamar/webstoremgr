@@ -3,6 +3,7 @@ import random
 import time
 import urllib.parse
 import json
+from pprint import pformat
 
 import jwt
 import requests
@@ -30,19 +31,22 @@ class ValidationResults:
         return """Errors: {errors}
 Warnings: {warnings}
 
-ERROR MESSAGES:
+---------------------
+-- ERROR MESSAGES: --
 {error_messages}
 
-WARNING MESSAGES:
+---------------------
+- WARNING MESSAGES: -
 {warning_messages}
 
-Other messages:
+---------------------
+-- Other messages: --
 {other_messages}
 """.format(errors=self.errors,
            warnings=self.warnings,
-           error_messages="\n".join(msg for msg in self.messages if msg['type'] == 'error'),
-           warning_messages="\n".join(msg for msg in self.messages if msg['type'] == 'warning'),
-           other_messages="\n".join(msg for msg in self.messages if msg['type'] not in ('error', 'warning')),
+           error_messages="\n".join(pformat(msg) for msg in self.messages if msg['type'] == 'error'),
+           warning_messages="\n".join(pformat(msg) for msg in self.messages if msg['type'] == 'warning'),
+           other_messages="\n".join(pformat(msg) for msg in self.messages if msg['type'] not in ('error', 'warning')),
            )
 
     @staticmethod
