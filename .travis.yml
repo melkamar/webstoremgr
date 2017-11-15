@@ -13,7 +13,7 @@ notifications:
     on_failure: change
 
 deploy:
-  provide: pypi
+  provider: pypi
   user:
     secure: "WAkraMTh/rX0Eiiqkg0c/cJoYksLDOMgGLhEcqu+O9JQxCBq2G6u/f0qGm48EyJon22LfvUKZYOVnNXf1FHV9OK17II0aK88A2xSbU5Jruf0CPVq4tK+Ee1ZP20UP/sMVPKyCkVcxgF8VEJTpw0ahguyXTBFgvVhxte5xKW0nOmJSDQl0mGBSyvXxLU85tcj4OIDP1lYTb9nLkal1KNHQDRrV+FaoqzJwc2+KyrqDTAZaqp05edAANzxuwElUKARMgrbRQSebxsZl/dKUP3ywWfPNW5hyIApQBNtoeGklh0Ibmm45bwTfATZGL4HXxOXjQvtREko7zslxzOlSWYVW/BciqF1KHwybc36ZmjVfbfg19wJbh8rnEmd+9pPfvUifArxOm6/UIXvoHnYct3kIijuGXjD39rgtH+TSweK4OIW7YD9+oROopMJ/Us0IJ8K1kvq00OCjZuG2t0y1s6TCQeaXUK/S49SaFDV9yFlsUGwDFCJD6b7F4m87tqiKsC5LJtJeicEGN81f5ehkhvtWzPdiPNmNMRXf+oPFvquwH/IcPGcPETgfbMMbQWrgsx3ppOk1cQwghoqq8qEJ4Bs2u9gEc+q+ASDBrHxcy+VU8j0NTMMXd7t++L61SkFEqMkmYajQ+4TGsidCSIv1nrI189jOvft8qiqlRimuZUlr8Q="
   password:
