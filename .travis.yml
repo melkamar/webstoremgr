@@ -7,6 +7,7 @@ install:
 script:
 - python setup.py test --addopts -v
 - cd docs && make doctest
+- python setup.py sdist
 notifications:
   email:
     on_success: change
