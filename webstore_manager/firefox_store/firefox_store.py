@@ -172,7 +172,7 @@ class FFStore(Store):
                         interval))
                 time.sleep(interval)
 
-        if not processed:
+        if not (processed and urls):
             raise NotProcessedError("Addon was not processed in time. "
                                     "Consider increasing number of attempts or interval.")
         else:
