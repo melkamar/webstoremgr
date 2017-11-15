@@ -13,8 +13,53 @@ from webstore_manager.store.store import Store
 logger = logging_helper.get_logger(__file__)
 
 
+class ValidationResults:
+    def __init__(self, success, errors, warnings, messages):
+        """
+
+        Args:
+            success: boolean
+            messages: List of JSON as obtained from mozilla.
+        """
+        self.warnings = warnings
+        self.errors = errors
+        self.messages = messages
+        self.success = success
+
+    def print(self):
+        return """Errors: {errors}
+Warnings: {warnings}
+
+ERROR MESSAGES:
+{error_messages}
+
+WARNING MESSAGES:
+{warning_messages}
+
+Other messages:
+{other_messages}
+""".format(errors=self.errors,
+           warnings=self.warnings,
+           error_messages="\n".join(msg for msg in self.messages if msg['type'] == 'error'),
+           warning_messages="\n".join(msg for msg in self.messages if msg['type'] == 'warning'),
+           other_messages="\n".join(msg for msg in self.messages if msg['type'] not in ('error', 'warning')),
+           )
+
+    @staticmethod
+    def parse_from_json(json_str):
+        warnings = json_str['warnings']
+        errors = json_str['errors']
+        messages = json_str['messages']
+        success = json_str['success']
+        return ValidationResults(success, errors, warnings, messages)
+
+
 class NotProcessedError(Exception):
     """Raised if the extension is not signed and attempts timed out."""
+
+
+class ValidationFailedError(Exception):
+    """Raised when FF validation fails."""
 
 
 class FFStore(Store):
@@ -112,6 +157,8 @@ class FFStore(Store):
                                                 False otherwise.
                urls(:obj:`list` of :obj:`str`): list of URLs from which to download the files associated with the
                                                 extension. Will be empty if processed is False.
+               validation_results:               of validation messages in format:
+
         """
         url = 'https://addons.mozilla.org/api/v3/addons/{}/versions/{}/'.format(addon_id, addon_version)
 
@@ -125,6 +172,11 @@ class FFStore(Store):
             exit(3)
 
         logger.debug('Addon status json: {}'.format(response.json()))
+        try:
+            validation_results = ValidationResults.parse_from_json(response.json()['validation_results'])
+        except KeyError:
+            validation_results = None
+
         processed = util.read_json_key(response.json(), 'processed')
 
         urls = []
@@ -132,7 +184,7 @@ class FFStore(Store):
             files = util.read_json_key(response.json(), 'files')
             urls = [util.read_json_key(file, 'download_url') for file in files]
 
-        return processed, urls
+        return processed, urls, validation_results
 
     def download(self, addon_id, addon_version, folder="", attempts=1, interval=10, target_name=""):
         """
@@ -158,7 +210,13 @@ class FFStore(Store):
         processed = False
         urls = []
         for attempt_nr in range(0, attempts):
-            processed, urls = self._get_addon_status(addon_id, addon_version)
+            processed, urls, validation_results = self._get_addon_status(addon_id, addon_version)
+
+            if validation_results is not None:
+                if not validation_results.success:
+                    logger.error('Validation ended with errors!')
+                    logger.error(validation_results.print())
+                    raise ValidationFailedError
 
             # Check both processed flag and if urls is not empty.
             # FF store may sometimes return processed=True but empty URL list, which is only filled up at the next call.
