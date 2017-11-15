@@ -62,3 +62,8 @@ have all testing dependencies installed.
 Documentation lives in the `docs` folder. To build it, run `make html` or `make.bat html` on Linux or Windows, 
 respectively.
 
+# Uploading new version
+
+- Bump version in `VERSION`
+- Push a new git tag
+- Travis will automatically deploy the new package
