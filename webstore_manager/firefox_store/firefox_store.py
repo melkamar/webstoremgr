@@ -47,6 +47,9 @@ Other messages:
 
     @staticmethod
     def parse_from_json(json_str):
+        if json_str is None:
+            return None
+
         warnings = json_str['warnings']
         errors = json_str['errors']
         messages = json_str['messages']
