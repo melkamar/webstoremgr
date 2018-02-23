@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 
-long_description = """Publish browser extensions to their stores.
-Currently only available for Google Chrome."""
+long_description = """Publish Chrome and Firefox extensions."""
 
 version_file = open('VERSION')
 ver = version_file.read().strip()
@@ -10,7 +9,7 @@ version_file.close()
 setup(
     name='webstoremgr',
     version=ver,
-    description='Publish browser extensions to their stores.',
+    description=long_description,
     long_description=long_description,
     author='Martin Melka',
     author_email='melka@avast.com',
@@ -26,7 +25,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Topic :: Software Development'
     ],
-    url='https://git.int.avast.com/melka/webstore-manager',
+    url='https://github.com/melkamar/webstoremgr',
     include_package_data=True,
     packages=find_packages(),
     entry_points={
