@@ -1,6 +1,6 @@
 # Webstore Manager
 
-[![Build Status](https://travis-ci.org/melkamar/webstore-manager.svg?branch=master)](https://travis-ci.org/melkamar/webstore-manager)
+[![Build Status](https://travis-ci.org/melkamar/webstoremgr.svg?branch=master)](https://travis-ci.org/melkamar/webstoremgr)
 [![Documentation Status](https://readthedocs.org/projects/webstore-manager/badge/?version=latest)](http://webstore-manager.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/webstoremgr.svg)](https://badge.fury.io/py/webstoremgr)
 
