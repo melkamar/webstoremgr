@@ -58,6 +58,16 @@ Tests are written with `py.test`. To run them, use `python setup.py test`.
 Alternatively, you may directly run pytest: `python -m pytest` in the root of the repository. In this case make sure you
 have all testing dependencies installed.
 
+##### Recording new Betamax cassettes
+- To record new cassettes, delete existing `webstore_manager/tests/fixtures/cassettes/*`. Make sure that folder
+`webstore_manager/tests/fixtures/cassettes` exists and is empty.
+
+- Run tests with environment variables `refresh_token`, `client_secret`, `code`, `client_id`, `app_id`. You will need to 
+get them by creating a Google account, API credentials, and running `init` command.
+
+- `app_id` must point to an extension that is already uploaded and has language and region set.
+
+
 ### Documentation
 Documentation lives in the `docs` folder. To build it, run `make html` or `make.bat html` on Linux or Windows, 
 respectively.

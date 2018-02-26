@@ -16,6 +16,8 @@ class ChromeStore(Store):
     TARGET_PUBLIC = 0
     TARGET_TRUSTED = 1
 
+    GOOGLE_OAUTH_TOKEN = 'https://www.googleapis.com/oauth2/v4/token'
+
     def __init__(self, client_id, client_secret, refresh_token=None, app_id="", session=None):
         """
         Args:
@@ -241,7 +243,7 @@ class ChromeStore(Store):
         logger.debug("    Code:          {}".format(code))
 
         session = session or requests.Session()
-        response = session.post("https://accounts.google.com/o/oauth2/token",
+        response = session.post(ChromeStore.GOOGLE_OAUTH_TOKEN,
                                 data={
                                     "client_id": client_id,
                                     "client_secret": client_secret,
@@ -274,7 +276,7 @@ class ChromeStore(Store):
             str: New user token valid (by default) for 1 hour.
         """
         session = session or requests.Session()
-        response = session.post("https://accounts.google.com/o/oauth2/token",
+        response = session.post(ChromeStore.GOOGLE_OAUTH_TOKEN,
                                 data={"client_id": client_id,
                                       "client_secret": client_secret,
                                       "refresh_token": refresh_token,

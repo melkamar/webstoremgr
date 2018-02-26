@@ -85,7 +85,7 @@ def test_check_status(betamax_session, auth):
                         session=betamax_session)
 
     version = store.get_uploaded_version()
-    assert version == '1.0.12345'
+    assert version == '1.0.12346'
 
 
 def test_repack_crx():

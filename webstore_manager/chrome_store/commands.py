@@ -97,6 +97,13 @@ def publish(client_id, client_secret, refresh_token, app_id, target):
     logger.debug("target: {}".format(target))
 
     store = chrome_store.ChromeStore(client_id, client_secret, refresh_token, app_id=app_id)
+    if target == 'public':
+        target = chrome_store.ChromeStore.TARGET_PUBLIC
+    elif target == 'trusted':
+        target = chrome_store.ChromeStore.TARGET_TRUSTED
+    else:
+        raise NotImplementedError("Unknown target type: {}".format(target))
+
     store.publish(target)
 
 
